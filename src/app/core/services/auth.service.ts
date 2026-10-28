@@ -1,6 +1,7 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { User } from '../models/user.model';
+import { CookingLevel } from '../models/cooking-level.model';
 
 // Credenciales almacenadas en localStorage (simula un backend)
 const STORAGE_KEY = 'nexus_users';
@@ -89,6 +90,29 @@ export class AuthService {
     localStorage.removeItem(SESSION_KEY);
     this.router.navigate(['/auth/login']);
   }
+
+  // ── Guardar nivel de cocina ──────────────────────────────────────────────────
+  saveCookingLevel(level: CookingLevel): void {
+    const user = this._currentUser();
+    if (!user) return;
+
+    const updated: User = { ...user, cookingLevel: level };
+    this.openSession(updated);
+
+    // Actualizar también en la lista de usuarios guardados
+    const users = this.getStoredUsers();
+    const idx = users.findIndex((u) => u.uid === updated.uid);
+    if (idx !== -1) {
+      users[idx] = { ...users[idx], cookingLevel: level };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+    }
+  }
+
+  // Indica si el usuario ya completó el onboarding de nivel
+  readonly needsLevelSelection = computed(() => {
+    const user = this._currentUser();
+    return user !== null && !user.cookingLevel;
+  });
 
   // ── Helpers privados ─────────────────────────────────────────────────────────
   private openSession(user: User): void {

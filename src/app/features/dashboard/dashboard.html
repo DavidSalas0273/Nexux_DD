@@ -12,6 +12,11 @@
 
   <section class="dashboard-body">
     <p>¡Bienvenido, <strong>{{ user()?.displayName ?? 'usuario' }}</strong>! 🎉</p>
-    <p class="text-muted">Esta es una ruta protegida. Solo accesible con sesión activa.</p>
+    @if (user()?.cookingLevel) {
+      <p class="level-badge">
+        Nivel de cocina: <strong>{{ user()!.cookingLevel }}</strong>
+      </p>
+    }
+    <p class="text-muted">Esta es una ruta protegida. Solo accesible con sesión activa y nivel seleccionado.</p>
   </section>
 </main>

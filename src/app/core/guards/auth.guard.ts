@@ -27,3 +27,21 @@ export const publicGuard: CanActivateFn = () => {
   router.navigate(['/dashboard']);
   return false;
 };
+
+// Guard para rutas que requieren nivel de cocina ya seleccionado
+export const levelSelectedGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+
+  if (!auth.isAuthenticated()) {
+    router.navigate(['/auth/login']);
+    return false;
+  }
+
+  if (auth.needsLevelSelection()) {
+    router.navigate(['/onboarding/nivel']);
+    return false;
+  }
+
+  return true;
+};

@@ -59,7 +59,8 @@ export class RegisterComponent {
     try {
       const { email, password, displayName } = this.form.value;
       await this.auth.register(email, password, displayName);
-      this.router.navigate(['/dashboard']);
+      // Tras el registro va al onboarding de nivel
+      this.router.navigate(['/onboarding/nivel']);
     } catch (err: any) {
       this.error.set(err.message);
     } finally {
@@ -72,7 +73,8 @@ export class RegisterComponent {
     this.error.set(null);
     try {
       await this.auth.loginWithGoogle();
-      this.router.navigate(['/dashboard']);
+      // Google también va al onboarding si no tiene nivel
+      this.router.navigate(['/onboarding/nivel']);
     } catch (err: any) {
       this.error.set(err.message);
     } finally {

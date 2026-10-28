@@ -1,3 +1,5 @@
+import { CookingLevel } from './cooking-level.model';
+
 export interface User {
   uid: string;
   email: string;
@@ -5,4 +7,5 @@ export interface User {
   photoURL: string | null;
   provider: 'email' | 'google';
   createdAt: Date;
+  cookingLevel?: CookingLevel;  // se asigna en el onboarding post-registro
 }
