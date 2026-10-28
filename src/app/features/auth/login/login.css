@@ -1,0 +1,207 @@
+/* Estilos del componente de login — heredan variables globales de styles.css */
+
+.auth-wrapper {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg, #f5f5f5);
+  padding: 1.5rem;
+}
+
+.auth-card {
+  background: var(--color-surface, #ffffff);
+  border-radius: 1rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  padding: 2.5rem 2rem;
+  width: 100%;
+  max-width: 420px;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.auth-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text, #111);
+  margin: 0 0 0.4rem;
+}
+
+.auth-subtitle {
+  color: var(--color-text-muted, #666);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* ── Formulario ─────────────────────────────────────────────────────────────── */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1.1rem;
+}
+
+.form-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text, #111);
+}
+
+.form-input {
+  padding: 0.65rem 0.85rem;
+  border: 1.5px solid var(--color-border, #ddd);
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  color: var(--color-text, #111);
+  background: var(--color-surface, #fff);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  border-color: var(--color-primary, #6c47ff);
+  box-shadow: 0 0 0 3px rgba(108, 71, 255, 0.15);
+}
+
+.form-input--error {
+  border-color: var(--color-error, #e53e3e);
+}
+
+.form-input--error:focus {
+  box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.15);
+}
+
+.form-error {
+  font-size: 0.8rem;
+  color: var(--color-error, #e53e3e);
+}
+
+/* ── Campo contraseña con botón toggle ─────────────────────────────────────── */
+.input-password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-password-wrapper .form-input {
+  padding-right: 2.75rem;
+}
+
+.btn-toggle-password {
+  position: absolute;
+  right: 0.6rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  color: var(--color-text-muted, #888);
+  display: flex;
+  align-items: center;
+}
+
+.btn-toggle-password:hover {
+  color: var(--color-text, #111);
+}
+
+/* ── Alerta de error ────────────────────────────────────────────────────────── */
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  margin-bottom: 1.25rem;
+}
+
+.alert--error {
+  background: #fff5f5;
+  color: var(--color-error, #e53e3e);
+  border: 1px solid rgba(229, 62, 62, 0.3);
+}
+
+/* ── Botones ────────────────────────────────────────────────────────────────── */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s, transform 0.1s;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn:not(:disabled):active {
+  transform: scale(0.98);
+}
+
+.btn--primary {
+  background: var(--color-primary, #6c47ff);
+  color: #fff;
+  margin-top: 0.5rem;
+}
+
+.btn--primary:not(:disabled):hover {
+  background: var(--color-primary-hover, #5636e0);
+}
+
+.btn--google {
+  background: #fff;
+  color: var(--color-text, #111);
+  border: 1.5px solid var(--color-border, #ddd);
+}
+
+.btn--google:not(:disabled):hover {
+  background: #f7f7f7;
+}
+
+/* ── Separador ──────────────────────────────────────────────────────────────── */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.25rem 0;
+  color: var(--color-text-muted, #999);
+  font-size: 0.85rem;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-border, #ddd);
+}
+
+/* ── Footer ─────────────────────────────────────────────────────────────────── */
+.auth-footer {
+  text-align: center;
+  margin-top: 1.25rem;
+  font-size: 0.875rem;
+  color: var(--color-text-muted, #666);
+}
+
+.auth-link {
+  color: var(--color-primary, #6c47ff);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-link:hover {
+  text-decoration: underline;
+}

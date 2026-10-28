@@ -1,0 +1,17 @@
+<main class="dashboard">
+  <header class="dashboard-header">
+    <h1 class="dashboard-title">Dashboard</h1>
+    <div class="dashboard-user">
+      @if (user()?.photoURL) {
+        <img [src]="user()!.photoURL!" [alt]="user()!.displayName ?? 'avatar'" class="user-avatar" />
+      }
+      <span class="user-name">{{ user()?.displayName ?? user()?.email }}</span>
+      <button class="btn-logout" (click)="logout()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <section class="dashboard-body">
+    <p>¡Bienvenido, <strong>{{ user()?.displayName ?? 'usuario' }}</strong>! 🎉</p>
+    <p class="text-muted">Esta es una ruta protegida. Solo accesible con sesión activa.</p>
+  </section>
+</main>
