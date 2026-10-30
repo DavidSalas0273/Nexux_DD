@@ -28,6 +28,9 @@
     </div>
   </header>
 
+  <!-- ── Selector de dificultad ───────────────────────────────────────────── -->
+  <app-difficulty-selector />
+
   <!-- ── Lista de unidades ─────────────────────────────────────────────────── -->
   <div class="units-list">
 
@@ -108,7 +111,12 @@
                   <p class="node-descripcion">{{ node.descripcion }}</p>
 
                   <div class="node-bottom">
-                    <span class="node-xp">+{{ node.xpRecompensa }} XP</span>
+                    <span class="node-xp">
+                      +{{ xpConDificultad(node.xpRecompensa) }} XP
+                      @if (difficulty.xpMultiplier() !== 1) {
+                        <span class="node-xp-mult">(x{{ difficulty.xpMultiplier() }})</span>
+                      }
+                    </span>
 
                     @if (node.status === 'activa') {
                       <button

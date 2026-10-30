@@ -3,6 +3,8 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { LearningService } from '../../core/services/learning.service';
 import { ProfileService } from '../../core/services/profile.service';
+import { DifficultyService } from '../../core/services/difficulty.service';
+import { DifficultySelectorComponent } from './difficulty-selector/difficulty-selector';
 import {
   LearningUnit,
   LearningNode,
@@ -14,14 +16,15 @@ import { CookingLevel } from '../../core/models/cooking-level.model';
 @Component({
   selector: 'app-learn',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, DifficultySelectorComponent],
   templateUrl: './learn.html',
   styleUrl: './learn.css',
 })
 export class LearnComponent implements OnInit {
-  private auth     = inject(AuthService);
-  private learning = inject(LearningService);
-  private profile  = inject(ProfileService);
+  private auth      = inject(AuthService);
+  private learning  = inject(LearningService);
+  private profile   = inject(ProfileService);
+  readonly difficulty = inject(DifficultyService);
 
   readonly user  = this.auth.currentUser;
 
@@ -68,11 +71,11 @@ export class LearnComponent implements OnInit {
   completarNodo(node: LearningNode, unitId: string): void {
     if (node.status !== 'activa') return;
 
-    const xp = node.xpRecompensa;
     this.learning.completarNodo(node.id);
 
-    // Mostrar toast de XP
-    this.xpToast.set(xp);
+    // Mostrar toast con XP final (ya con multiplicador aplicado)
+    const xpFinal = this.learning.lastXP();
+    this.xpToast.set(xpFinal);
     setTimeout(() => this.xpToast.set(null), 2000);
 
     // Auto-expandir la unidad donde quedó el nuevo nodo activo
@@ -119,5 +122,10 @@ export class LearnComponent implements OnInit {
 
   get totalXP(): number {
     return this.profile.stats()?.xpTotal ?? 0;
+  }
+
+  // XP de un nodo con el multiplicador de dificultad aplicado
+  xpConDificultad(base: number): number {
+    return this.difficulty.calculateXP(base);
   }
 }

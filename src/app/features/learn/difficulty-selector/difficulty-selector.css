@@ -1,0 +1,120 @@
+.difficulty-panel {
+  background: var(--color-surface, #fff);
+  border-radius: 1rem;
+  border: 1.5px solid var(--color-border, #e2e2e9);
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* ── Encabezado ──────────────────────────────────────────────────────────────── */
+.difficulty-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.difficulty-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--color-text-muted, #888);
+}
+
+.difficulty-current {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-text, #111);
+}
+
+/* ── Multiplicador XP ────────────────────────────────────────────────────────── */
+.xp-mult {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 2rem;
+  background: var(--color-border, #e2e2e9);
+  color: var(--color-text-muted, #777);
+}
+
+.xp-mult--bonus   { background: #fef9c3; color: #b45309; }
+.xp-mult--reduced { background: #f0fdf4; color: #16a34a; }
+
+/* ── Opciones ────────────────────────────────────────────────────────────────── */
+.difficulty-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.difficulty-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1rem;
+  border: 1.5px solid var(--color-border, #e2e2e9);
+  border-radius: 0.65rem;
+  background: var(--color-surface, #fff);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.difficulty-btn:hover {
+  border-color: var(--color-primary, #6c47ff);
+  background: color-mix(in srgb, var(--color-primary, #6c47ff) 4%, transparent);
+}
+
+.difficulty-btn--selected {
+  border-color: var(--color-primary, #6c47ff);
+  background: color-mix(in srgb, var(--color-primary, #6c47ff) 7%, transparent);
+  box-shadow: 0 0 0 3px rgba(108, 71, 255, 0.1);
+}
+
+.diff-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.diff-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.diff-label {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--color-text, #111);
+}
+
+.diff-desc {
+  font-size: 0.78rem;
+  color: var(--color-text-muted, #777);
+  line-height: 1.35;
+}
+
+/* Badge XP por opción */
+.diff-xp-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 2rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+  background: var(--color-border, #e2e2e9);
+  color: var(--color-text-muted, #777);
+}
+
+.diff-xp-badge--bonus   { background: #fef9c3; color: #b45309; }
+.diff-xp-badge--reduced { background: #f0fdf4; color: #16a34a; }

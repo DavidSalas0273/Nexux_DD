@@ -1,7 +1,8 @@
-import { Injectable, inject, signal, computed } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { LearningUnit, LearningNode, NodeStatus } from '../models/learning-path.model';
 import { ProfileService } from './profile.service';
 import { AuthService } from './auth.service';
+import { DifficultyService } from './difficulty.service';
 
 // Clave de progreso: nexus_progress_<uid>_<level>
 const progressKey = (uid: string, level: string) =>
@@ -9,8 +10,9 @@ const progressKey = (uid: string, level: string) =>
 
 @Injectable({ providedIn: 'root' })
 export class LearningService {
-  private profile = inject(ProfileService);
-  private auth    = inject(AuthService);
+  private profile    = inject(ProfileService);
+  private auth       = inject(AuthService);
+  private difficulty = inject(DifficultyService);
 
   // Unidades con progreso aplicado
   private _units = signal<LearningUnit[]>([]);
@@ -18,6 +20,9 @@ export class LearningService {
 
   // Nodo que se completó recientemente (para feedback visual)
   readonly lastCompleted = signal<string | null>(null);
+
+  // XP final otorgado en el último nodo completado
+  readonly lastXP = signal<number>(0);
 
   // ── Cargar progreso guardado ─────────────────────────────────────────────────
   loadProgress(baseUnits: LearningUnit[]): void {
@@ -97,8 +102,12 @@ export class LearningService {
     // 3. Persistir progreso
     this.saveProgress(uid, level, units);
 
-    // 4. Sumar XP al perfil
-    this.profile.addXP(uid, node.xpRecompensa);
+    // 4. Sumar XP al perfil (aplicando multiplicador de dificultad)
+    const xpFinal = this.difficulty.calculateXP(node.xpRecompensa);
+    this.profile.addXP(uid, xpFinal);
+
+    // Guardar el XP final para que el componente lo muestre en el toast
+    this.lastXP.set(xpFinal);
 
     // 5. Incrementar recetas si es una lección (no examen)
     if (node.tipo === 'leccion') {

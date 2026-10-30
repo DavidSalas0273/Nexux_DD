@@ -324,6 +324,14 @@
   background: color-mix(in srgb, var(--color-primary, #6c47ff) 10%, transparent);
   padding: 0.15rem 0.55rem;
   border-radius: 2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.node-xp-mult {
+  font-size: 0.7rem;
+  opacity: 0.8;
 }
 
 .node--bloqueada .node-xp {

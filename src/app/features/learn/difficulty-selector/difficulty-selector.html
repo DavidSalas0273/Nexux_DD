@@ -1,0 +1,40 @@
+<div class="difficulty-panel">
+  <div class="difficulty-header">
+    <span class="difficulty-title">Modo de dificultad</span>
+    <span class="difficulty-current">
+      {{ current().icon }} {{ current().label }}
+      <span class="xp-mult"
+        [class.xp-mult--bonus]="current().xpMultiplier > 1"
+        [class.xp-mult--reduced]="current().xpMultiplier < 1"
+      >
+        x{{ current().xpMultiplier }} XP
+      </span>
+    </span>
+  </div>
+
+  <div class="difficulty-options" role="radiogroup" aria-label="Seleccionar dificultad">
+    @for (opt of options; track opt.value) {
+      <button
+        type="button"
+        class="difficulty-btn"
+        [class.difficulty-btn--selected]="isSelected(opt.value)"
+        (click)="select(opt.value)"
+        [attr.aria-pressed]="isSelected(opt.value)"
+        [attr.aria-label]="opt.label + ': ' + opt.description"
+      >
+        <span class="diff-icon" aria-hidden="true">{{ opt.icon }}</span>
+        <div class="diff-info">
+          <span class="diff-label">{{ opt.label }}</span>
+          <span class="diff-desc">{{ opt.description }}</span>
+        </div>
+        <span
+          class="diff-xp-badge"
+          [class.diff-xp-badge--bonus]="opt.xpMultiplier > 1"
+          [class.diff-xp-badge--reduced]="opt.xpMultiplier < 1"
+        >
+          x{{ opt.xpMultiplier }} XP
+        </span>
+      </button>
+    }
+  </div>
+</div>
