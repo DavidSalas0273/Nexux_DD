@@ -4,11 +4,12 @@ import { AuthService } from '../../core/services/auth.service';
 import { ProfileService } from '../../core/services/profile.service';
 import { COOKING_LEVELS } from '../../core/models/cooking-level.model';
 import { Liga } from '../../core/models/user-stats.model';
+import { BadgesComponent } from './badges/badges';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, BadgesComponent],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
 })

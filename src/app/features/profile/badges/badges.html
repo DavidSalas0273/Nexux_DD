@@ -1,0 +1,61 @@
+<div class="badges-section">
+
+  <!-- ── Encabezado ────────────────────────────────────────────────────────── -->
+  <div class="badges-header">
+    <h2 class="badges-title">Insignias</h2>
+    <span class="badges-counter" aria-label="{{ totalObten() }} de {{ total() }} insignias obtenidas">
+      {{ totalObten() }} / {{ total() }}
+    </span>
+  </div>
+
+  <!-- Barra de progreso total -->
+  <div class="badges-progress-track" aria-hidden="true">
+    <div
+      class="badges-progress-fill"
+      [style.width.%]="(totalObten() / total()) * 100"
+    ></div>
+  </div>
+
+  <!-- ── Insignias obtenidas ────────────────────────────────────────────────── -->
+  @if (obtenidas().length > 0) {
+    <div class="badges-group">
+      <h3 class="badges-group-title">✅ Obtenidas</h3>
+      <div class="badges-grid">
+        @for (badge of obtenidas(); track badge.id) {
+          <div
+            class="badge-card badge-card--obtenida"
+            [attr.aria-label]="badge.nombre + ': ' + badge.descripcion"
+            role="img"
+          >
+            <span class="badge-icon">{{ badge.icon }}</span>
+            <span class="badge-name">{{ badge.nombre }}</span>
+            <span class="badge-desc">{{ badge.descripcion }}</span>
+            <span class="badge-category">{{ categoriaLabel(badge.categoria) }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- ── Insignias pendientes ───────────────────────────────────────────────── -->
+  @if (pendientes().length > 0) {
+    <div class="badges-group">
+      <h3 class="badges-group-title">🔒 Por ganar</h3>
+      <div class="badges-grid">
+        @for (badge of pendientes(); track badge.id) {
+          <div
+            class="badge-card badge-card--pendiente"
+            [attr.aria-label]="'Insignia bloqueada: ' + badge.nombre + '. ' + badge.descripcion"
+            role="img"
+          >
+            <span class="badge-icon badge-icon--locked" aria-hidden="true">🔒</span>
+            <span class="badge-name">{{ badge.nombre }}</span>
+            <span class="badge-desc">{{ badge.descripcion }}</span>
+            <span class="badge-category">{{ categoriaLabel(badge.categoria) }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+</div>
