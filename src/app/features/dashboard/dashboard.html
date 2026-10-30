@@ -6,6 +6,7 @@
         <img [src]="user()!.photoURL!" [alt]="user()!.displayName ?? 'avatar'" class="user-avatar" />
       }
       <span class="user-name">{{ user()?.displayName ?? user()?.email }}</span>
+      <a routerLink="/perfil" class="btn-profile">Mi perfil</a>
       <button class="btn-logout" (click)="logout()">Cerrar sesión</button>
     </div>
   </header>

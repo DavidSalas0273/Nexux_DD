@@ -60,6 +60,13 @@ export const routes: Routes = [
       import('./features/dashboard/dashboard').then((m) => m.DashboardComponent),
   },
 
+  {
+    path: 'perfil',
+    canActivate: [levelSelectedGuard],
+    loadComponent: () =>
+      import('./features/profile/profile').then((m) => m.ProfileComponent),
+  },
+
   // Fallback
   {
     path: '**',

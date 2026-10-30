@@ -55,6 +55,22 @@
   background: #f7f7f7;
 }
 
+.btn-profile {
+  padding: 0.45rem 1rem;
+  border-radius: 0.5rem;
+  border: 1.5px solid var(--color-primary, #6c47ff);
+  background: color-mix(in srgb, var(--color-primary, #6c47ff) 8%, transparent);
+  color: var(--color-primary, #6c47ff);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.btn-profile:hover {
+  background: color-mix(in srgb, var(--color-primary, #6c47ff) 16%, transparent);
+}
+
 .dashboard-body {
   color: var(--color-text, #333);
 }
