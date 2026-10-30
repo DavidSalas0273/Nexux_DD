@@ -18,6 +18,17 @@
         Nivel de cocina: <strong>{{ user()!.cookingLevel }}</strong>
       </p>
     }
-    <p class="text-muted">Esta es una ruta protegida. Solo accesible con sesión activa y nivel seleccionado.</p>
+    <div class="dashboard-actions">
+      <a routerLink="/aprender" class="dashboard-action-card">
+        <span class="action-icon">📚</span>
+        <span class="action-label">Aprender</span>
+        <span class="action-desc">Continúa tu ruta de aprendizaje</span>
+      </a>
+      <a routerLink="/perfil" class="dashboard-action-card">
+        <span class="action-icon">👤</span>
+        <span class="action-label">Mi perfil</span>
+        <span class="action-desc">Estadísticas e insignias</span>
+      </a>
+    </div>
   </section>
 </main>
