@@ -73,20 +73,58 @@
 
 .dashboard-body {
   color: var(--color-text, #333);
-}
-
-.text-muted {
-  color: var(--color-text-muted, #777);
-  font-size: 0.9rem;
+  padding: 1.5rem 2rem;
 }
 
 .level-badge {
   display: inline-block;
   margin-top: 0.5rem;
+  margin-bottom: 1.25rem;
   padding: 0.3rem 0.85rem;
   border-radius: 2rem;
   background: color-mix(in srgb, var(--color-primary, #6c47ff) 10%, transparent);
   color: var(--color-primary, #6c47ff);
   font-size: 0.9rem;
   text-transform: capitalize;
+}
+
+.dashboard-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.dashboard-action-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 1.25rem;
+  background: var(--color-surface, #fff);
+  border-radius: 0.875rem;
+  border: 1.5px solid var(--color-border, #e2e2e9);
+  text-decoration: none;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.1s;
+}
+
+.dashboard-action-card:hover {
+  border-color: var(--color-primary, #6c47ff);
+  box-shadow: 0 4px 16px rgba(108, 71, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.action-icon {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.action-label {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text, #111);
+}
+
+.action-desc {
+  font-size: 0.8rem;
+  color: var(--color-text-muted, #888);
 }
