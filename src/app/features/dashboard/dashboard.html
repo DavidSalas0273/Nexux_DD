@@ -6,12 +6,18 @@
         <img [src]="user()!.photoURL!" [alt]="user()!.displayName ?? 'avatar'" class="user-avatar" />
       }
       <span class="user-name">{{ user()?.displayName ?? user()?.email }}</span>
+      <a routerLink="/perfil" class="btn-profile">Mi perfil</a>
       <button class="btn-logout" (click)="logout()">Cerrar sesión</button>
     </div>
   </header>
 
   <section class="dashboard-body">
     <p>¡Bienvenido, <strong>{{ user()?.displayName ?? 'usuario' }}</strong>! 🎉</p>
-    <p class="text-muted">Esta es una ruta protegida. Solo accesible con sesión activa.</p>
+    @if (user()?.cookingLevel) {
+      <p class="level-badge">
+        Nivel de cocina: <strong>{{ user()!.cookingLevel }}</strong>
+      </p>
+    }
+    <p class="text-muted">Esta es una ruta protegida. Solo accesible con sesión activa y nivel seleccionado.</p>
   </section>
 </main>

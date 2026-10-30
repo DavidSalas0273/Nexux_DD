@@ -1,0 +1,112 @@
+<div class="profile-page">
+
+  <!-- ── Cabecera / Hero ──────────────────────────────────────────────────── -->
+  <section class="profile-hero">
+    <div class="avatar-wrapper">
+      @if (user()?.photoURL) {
+        <img
+          [src]="user()!.photoURL!"
+          [alt]="user()!.displayName ?? 'avatar'"
+          class="avatar-img"
+        />
+      } @else {
+        <div class="avatar-initials" aria-hidden="true">{{ initials }}</div>
+      }
+      <span
+        class="avatar-level-badge"
+        [attr.aria-label]="'Nivel: ' + levelLabel"
+      >{{ levelIcon }}</span>
+    </div>
+
+    <div class="hero-info">
+      <h1 class="hero-name">{{ user()?.displayName ?? 'Chef' }}</h1>
+      <p class="hero-email">{{ user()?.email }}</p>
+      <p class="hero-since">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/>
+          <line x1="3" x2="21" y1="10" y2="10"/>
+        </svg>
+        Miembro desde {{ fechaIngreso }}
+      </p>
+      <span class="hero-level-pill">{{ levelIcon }} {{ levelLabel }}</span>
+      <a routerLink="/perfil/editar" class="btn-edit-profile">
+        ✏️ Editar perfil
+      </a>
+    </div>
+  </section>
+
+  <!-- ── Liga y XP ─────────────────────────────────────────────────────────── -->
+  @if (stats()) {
+    <section class="liga-section" aria-label="Liga y experiencia">
+      <div
+        class="liga-badge"
+        [style.--liga-color]="ligaConfig(stats()!.liga).color"
+      >
+        <span class="liga-icon" aria-hidden="true">{{ ligaConfig(stats()!.liga).icon }}</span>
+        <div class="liga-info">
+          <span class="liga-name">Liga {{ stats()!.liga }}</span>
+          <span class="liga-xp">{{ stats()!.xpTotal }} XP</span>
+        </div>
+      </div>
+
+      <div class="xp-bar-wrapper" aria-label="Progreso hacia la siguiente liga">
+        <div class="xp-bar-track">
+          <div
+            class="xp-bar-fill"
+            [style.width.%]="xpProgress"
+            role="progressbar"
+            [attr.aria-valuenow]="xpProgress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+          ></div>
+        </div>
+        <span class="xp-bar-label">
+          {{ stats()!.xpTotal }} / {{ xpNextLiga }} XP para la próxima liga
+        </span>
+      </div>
+    </section>
+
+    <!-- ── Estadísticas ───────────────────────────────────────────────────── -->
+    <section class="stats-grid" aria-label="Estadísticas del usuario">
+
+      <div class="stat-card">
+        <span class="stat-icon" aria-hidden="true">🔥</span>
+        <span class="stat-value">{{ stats()!.racha }}</span>
+        <span class="stat-label">Racha (días)</span>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-icon" aria-hidden="true">⭐</span>
+        <span class="stat-value">{{ stats()!.xpTotal }}</span>
+        <span class="stat-label">XP Total</span>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-icon" aria-hidden="true">🍽️</span>
+        <span class="stat-value">{{ stats()!.recetasCompletadas }}</span>
+        <span class="stat-label">Recetas</span>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-icon" aria-hidden="true">{{ ligaConfig(stats()!.liga).icon }}</span>
+        <span class="stat-value">{{ stats()!.liga }}</span>
+        <span class="stat-label">Liga actual</span>
+      </div>
+
+    </section>
+  }
+
+  <!-- ── Insignias ────────────────────────────────────────────────────────── -->
+  <app-badges />
+
+  <!-- ── Navegación de regreso ─────────────────────────────────────────────── -->
+  <div class="profile-footer">
+    <a routerLink="/dashboard" class="btn-back">
+      ← Volver al dashboard
+    </a>
+  </div>
+
+</div>
