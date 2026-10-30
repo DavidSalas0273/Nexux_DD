@@ -1,6 +1,8 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { LearningService } from '../../core/services/learning.service';
+import { ProfileService } from '../../core/services/profile.service';
 import {
   LearningUnit,
   LearningNode,
@@ -17,22 +19,41 @@ import { CookingLevel } from '../../core/models/cooking-level.model';
   styleUrl: './learn.css',
 })
 export class LearnComponent implements OnInit {
-  private auth = inject(AuthService);
+  private auth     = inject(AuthService);
+  private learning = inject(LearningService);
+  private profile  = inject(ProfileService);
 
   readonly user  = this.auth.currentUser;
-  units = signal<LearningUnit[]>([]);
 
-  // Unidad expandida actualmente
+  // Las unidades vienen del servicio (reactivas con progreso persistido)
+  readonly units = this.learning.units;
+
+  // Nodo recién completado para animación de feedback
+  readonly lastCompleted = this.learning.lastCompleted;
+
+  // Unidad expandida
   expandedUnit = signal<string | null>(null);
+
+  // Toast de XP ganado
+  xpToast = signal<number | null>(null);
 
   ngOnInit(): void {
     const level = (this.user()?.cookingLevel ?? 'principiante') as CookingLevel;
-    this.units.set(getRutaByLevel(level));
-    // Expande la primera unidad con nodos activos por defecto
-    const first = this.units().find((u) =>
-      u.nodos.some((n) => n.status === 'activa' || n.status === 'completada')
-    );
-    if (first) this.expandedUnit.set(first.id);
+    const uid   = this.user()?.uid;
+
+    // Cargar stats del perfil
+    if (uid) this.profile.loadStats(uid);
+
+    // Cargar ruta base y aplicar progreso guardado
+    const base = getRutaByLevel(level);
+    this.learning.loadProgress(base);
+
+    // Expandir la unidad con el nodo activo
+    const activeUnit = this.units().find((u) =>
+      u.nodos.some((n) => n.status === 'activa')
+    ) ?? this.units()[0];
+
+    if (activeUnit) this.expandedUnit.set(activeUnit.id);
   }
 
   toggleUnit(uid: string): void {
@@ -43,40 +64,60 @@ export class LearnComponent implements OnInit {
     return this.expandedUnit() === uid;
   }
 
-  // Cuántos nodos completados tiene una unidad
+  // ── Completar nodo ───────────────────────────────────────────────────────────
+  completarNodo(node: LearningNode, unitId: string): void {
+    if (node.status !== 'activa') return;
+
+    const xp = node.xpRecompensa;
+    this.learning.completarNodo(node.id);
+
+    // Mostrar toast de XP
+    this.xpToast.set(xp);
+    setTimeout(() => this.xpToast.set(null), 2000);
+
+    // Auto-expandir la unidad donde quedó el nuevo nodo activo
+    const nextActive = this.units().find((u) =>
+      u.nodos.some((n) => n.status === 'activa')
+    );
+    if (nextActive) this.expandedUnit.set(nextActive.id);
+  }
+
+  // ── Helpers de presentación ──────────────────────────────────────────────────
   completadas(unit: LearningUnit): number {
     return unit.nodos.filter((n) => n.status === 'completada').length;
   }
 
-  // Progreso porcentual de la unidad
   progreso(unit: LearningUnit): number {
     return Math.round((this.completadas(unit) / unit.nodos.length) * 100);
   }
 
-  // Icono según el estado del nodo
   nodeIcon(node: LearningNode): string {
     if (node.status === 'completada') return '✅';
     if (node.status === 'bloqueada')  return '🔒';
     return node.tipo === 'examen' ? '📝' : '📖';
   }
 
-  // Etiqueta de tipo
   tipoLabel(node: LearningNode): string {
     return node.tipo === 'examen' ? 'Examen' : 'Lección';
   }
 
-  // Clase CSS del nodo según su estado
   nodeClass(status: NodeStatus): string {
     return `node--${status}`;
   }
 
-  // XP total disponible en una unidad
   xpUnidad(unit: LearningUnit): number {
     return unit.nodos.reduce((sum, n) => sum + n.xpRecompensa, 0);
   }
 
-  // Nivel legible
+  isJustCompleted(nodeId: string): boolean {
+    return this.lastCompleted() === nodeId;
+  }
+
   get nivelLabel(): string {
     return this.user()?.cookingLevel ?? 'principiante';
+  }
+
+  get totalXP(): number {
+    return this.profile.stats()?.xpTotal ?? 0;
   }
 }

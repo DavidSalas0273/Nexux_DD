@@ -1,5 +1,12 @@
 <div class="learn-page">
 
+  <!-- ── Toast XP ──────────────────────────────────────────────────────────── -->
+  @if (xpToast()) {
+    <div class="xp-toast" role="status" aria-live="polite">
+      ⭐ +{{ xpToast() }} XP ganados
+    </div>
+  }
+
   <!-- ── Cabecera ─────────────────────────────────────────────────────────── -->
   <header class="learn-header">
     <div class="learn-header-top">
@@ -12,7 +19,10 @@
       </a>
       <div>
         <h1 class="learn-title">Aprender</h1>
-        <p class="learn-subtitle">Ruta: <strong class="level-tag">{{ nivelLabel }}</strong></p>
+        <p class="learn-subtitle">
+          Ruta: <strong class="level-tag">{{ nivelLabel }}</strong>
+          · <span class="xp-counter">⭐ {{ totalXP }} XP</span>
+        </p>
       </div>
     </div>
   </header>
@@ -23,7 +33,7 @@
     @for (unit of units(); track unit.id) {
       <div class="unit-card" [class.unit-card--expanded]="isExpanded(unit.id)">
 
-        <!-- Cabecera de la unidad (clickeable para expandir) -->
+        <!-- Cabecera de la unidad -->
         <button
           class="unit-header"
           (click)="toggleUnit(unit.id)"
@@ -36,8 +46,7 @@
             <span class="unit-titulo">{{ unit.titulo }}</span>
             <span class="unit-desc">{{ unit.descripcion }}</span>
 
-            <!-- Barra de progreso -->
-            <div class="unit-progress-wrapper" aria-label="Progreso de la unidad">
+            <div class="unit-progress-wrapper">
               <div class="unit-progress-track">
                 <div
                   class="unit-progress-fill"
@@ -54,7 +63,6 @@
             </div>
           </div>
 
-          <!-- Flecha -->
           <svg
             class="unit-arrow"
             [class.unit-arrow--open]="isExpanded(unit.id)"
@@ -67,24 +75,23 @@
           </svg>
         </button>
 
-        <!-- Cuerpo: nodos -->
+        <!-- Nodos -->
         @if (isExpanded(unit.id)) {
           <div
             class="unit-body"
             [id]="'unit-body-' + unit.id"
             role="list"
           >
-            <!-- Línea vertical conectora -->
             <div class="nodes-track" aria-hidden="true"></div>
 
             @for (node of unit.nodos; track node.id) {
               <div
                 class="node"
                 [class]="nodeClass(node.status)"
+                [class.node--just-completed]="isJustCompleted(node.id)"
                 role="listitem"
                 [attr.aria-label]="node.titulo + ' — ' + node.status"
               >
-                <!-- Punto en la línea -->
                 <div class="node-dot" aria-hidden="true">
                   <span class="node-dot-icon">{{ nodeIcon(node) }}</span>
                 </div>
@@ -96,19 +103,29 @@
                       {{ tipoLabel(node) }}
                     </span>
                   </div>
+
                   <p class="node-descripcion">{{ node.descripcion }}</p>
+
                   <div class="node-bottom">
                     <span class="node-xp">+{{ node.xpRecompensa }} XP</span>
+
                     @if (node.status === 'activa') {
-                      <button class="btn-empezar" type="button">
-                        @if (node.tipo === 'examen') { Iniciar examen } @else { Empezar lección }
+                      <button
+                        class="btn-empezar"
+                        type="button"
+                        (click)="completarNodo(node, unit.id)"
+                        [attr.aria-label]="'Completar: ' + node.titulo"
+                      >
+                        @if (node.tipo === 'examen') { Iniciar examen } @else { Completar lección }
                       </button>
                     }
+
                     @if (node.status === 'completada') {
                       <span class="node-done-label">Completada ✓</span>
                     }
+
                     @if (node.status === 'bloqueada') {
-                      <span class="node-locked-label">🔒 Bloqueada</span>
+                      <span class="node-locked-label">🔒 Completa la lección anterior</span>
                     }
                   </div>
                 </div>
@@ -121,5 +138,4 @@
     }
 
   </div>
-
 </div>
