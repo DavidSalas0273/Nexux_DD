@@ -104,6 +104,29 @@
   width: fit-content;
 }
 
+.btn-edit-profile {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 0.5rem;
+  border: 1.5px solid var(--color-border, #e2e2e9);
+  background: var(--color-surface, #fff);
+  color: var(--color-text, #111);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  width: fit-content;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.btn-edit-profile:hover {
+  background: var(--color-bg, #f4f4f6);
+  border-color: var(--color-primary, #6c47ff);
+  color: var(--color-primary, #6c47ff);
+}
+
 /* ── Liga ────────────────────────────────────────────────────────────────────── */
 .liga-section {
   background: var(--color-surface, #fff);

@@ -91,6 +91,23 @@ export class AuthService {
     this.router.navigate(['/auth/login']);
   }
 
+  // ── Actualizar datos del perfil ─────────────────────────────────────────────
+  updateProfile(data: Partial<Pick<User, 'displayName' | 'photoURL'>>): void {
+    const user = this._currentUser();
+    if (!user) return;
+
+    const updated: User = { ...user, ...data };
+    this.openSession(updated);
+
+    // Sincronizar en la lista de usuarios
+    const users = this.getStoredUsers();
+    const idx = users.findIndex((u) => u.uid === updated.uid);
+    if (idx !== -1) {
+      users[idx] = { ...users[idx], ...data };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+    }
+  }
+
   // ── Guardar nivel de cocina ──────────────────────────────────────────────────
   saveCookingLevel(level: CookingLevel): void {
     const user = this._currentUser();

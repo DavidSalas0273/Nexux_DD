@@ -67,6 +67,15 @@ export const routes: Routes = [
       import('./features/profile/profile').then((m) => m.ProfileComponent),
   },
 
+  {
+    path: 'perfil/editar',
+    canActivate: [levelSelectedGuard],
+    loadComponent: () =>
+      import('./features/profile/edit-profile/edit-profile').then(
+        (m) => m.EditProfileComponent
+      ),
+  },
+
   // Fallback
   {
     path: '**',
