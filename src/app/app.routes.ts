@@ -1,3 +1,75 @@
 import { Routes } from '@angular/router';
+import { authGuard, publicGuard, levelSelectedGuard } from './core/guards/auth.guard';
 
-export const routes: Routes = [];
+export const routes: Routes = [
+  // Redirige la raíz al login
+  {
+    path: '',
+    redirectTo: 'auth/login',
+    pathMatch: 'full',
+  },
+
+  // ── Módulo de autenticación (rutas públicas) ─────────────────────────────────
+  {
+    path: 'auth',
+    canActivate: [publicGuard],
+    children: [
+      {
+        path: 'login',
+        loadComponent: () =>
+          import('./features/auth/login/login').then((m) => m.LoginComponent),
+      },
+      {
+        path: 'register',
+        loadComponent: () =>
+          import('./features/auth/register/register').then((m) => m.RegisterComponent),
+      },
+      {
+        path: '',
+        redirectTo: 'login',
+        pathMatch: 'full',
+      },
+    ],
+  },
+
+  // ── Onboarding — requiere sesión, no requiere nivel previo ───────────────────
+  {
+    path: 'onboarding',
+    canActivate: [authGuard],
+    children: [
+      {
+        path: 'nivel',
+        loadComponent: () =>
+          import('./features/onboarding/cooking-level/cooking-level').then(
+            (m) => m.CookingLevelComponent
+          ),
+      },
+      {
+        path: '',
+        redirectTo: 'nivel',
+        pathMatch: 'full',
+      },
+    ],
+  },
+
+  // ── Rutas protegidas — requieren sesión y nivel de cocina seleccionado ────────
+  {
+    path: 'dashboard',
+    canActivate: [levelSelectedGuard],
+    loadComponent: () =>
+      import('./features/dashboard/dashboard').then((m) => m.DashboardComponent),
+  },
+
+  {
+    path: 'perfil',
+    canActivate: [levelSelectedGuard],
+    loadComponent: () =>
+      import('./features/profile/profile').then((m) => m.ProfileComponent),
+  },
+
+  // Fallback
+  {
+    path: '**',
+    redirectTo: 'auth/login',
+  },
+];
