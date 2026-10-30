@@ -1,0 +1,103 @@
+<div class="player-page">
+
+  @if (node()) {
+
+    <!-- ── Cabecera ───────────────────────────────────────────────────────── -->
+    <header class="player-header">
+      <a routerLink="/aprender" class="btn-back" aria-label="Volver a Aprender">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+          stroke-linejoin="round" aria-hidden="true">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </a>
+      <div class="player-header-info">
+        <span class="player-tipo-badge player-tipo-badge--{{ node()!.tipo }}">
+          {{ node()!.tipo === 'examen' ? 'Examen' : 'Lección' }}
+        </span>
+        <h1 class="player-titulo">{{ node()!.titulo }}</h1>
+        <div class="player-meta">
+          @if (duracionLabel) {
+            <span>🕐 {{ duracionLabel }}</span>
+          }
+          <span>⭐ +{{ xpLabel }} XP</span>
+          <span class="player-difficulty">{{ difficulty.current().icon }} {{ difficulty.current().label }}</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ── Reproductor de video ───────────────────────────────────────────── -->
+    @if (safeUrl() && !completed()) {
+      <section class="video-section" aria-label="Video de la lección">
+        <div class="video-wrapper">
+          <iframe
+            [src]="safeUrl()!"
+            class="video-iframe"
+            title="{{ node()!.titulo }}"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+        </div>
+
+        @if (!videoWatched()) {
+          <button
+            class="btn-watched"
+            type="button"
+            (click)="markVideoWatched()"
+          >
+            ✓ Ya vi el video
+          </button>
+        }
+      </section>
+    }
+
+    @if (!safeUrl() && !completed()) {
+      <!-- Lección sin video (examen u otro tipo) -->
+      <div class="no-video-placeholder">
+        <span class="no-video-icon" aria-hidden="true">📝</span>
+        <p>Este nodo no tiene video pregrabado.</p>
+      </div>
+    }
+
+    <!-- ── Descripción ────────────────────────────────────────────────────── -->
+    @if (!completed()) {
+      <section class="player-description">
+        <h2 class="desc-title">Descripción</h2>
+        <p class="desc-text">{{ node()!.descripcion }}</p>
+      </section>
+
+      <!-- ── Botón completar ──────────────────────────────────────────────── -->
+      <div class="player-actions">
+        <button
+          class="btn-completar"
+          type="button"
+          [disabled]="safeUrl() !== null && !videoWatched()"
+          (click)="completarLeccion()"
+          [attr.aria-label]="'Marcar como completada: ' + node()!.titulo"
+        >
+          @if (safeUrl() && !videoWatched()) {
+            🔒 Ve el video para continuar
+          } @else {
+            ✅ Marcar como completada
+          }
+        </button>
+      </div>
+    }
+
+    <!-- ── Pantalla de éxito ──────────────────────────────────────────────── -->
+    @if (completed()) {
+      <div class="success-screen" role="status" aria-live="assertive">
+        <span class="success-icon" aria-hidden="true">🎉</span>
+        <h2 class="success-title">¡Lección completada!</h2>
+        <p class="success-xp">+{{ xpEarned() }} XP ganados</p>
+        <p class="success-redirect">Volviendo a tu ruta…</p>
+      </div>
+    }
+
+  } @else {
+    <div class="loading-state" aria-label="Cargando lección">
+      <p>Cargando lección…</p>
+    </div>
+  }
+
+</div>

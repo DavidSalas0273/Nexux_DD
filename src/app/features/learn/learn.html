@@ -119,14 +119,24 @@
                     </span>
 
                     @if (node.status === 'activa') {
-                      <button
-                        class="btn-empezar"
-                        type="button"
-                        (click)="completarNodo(node, unit.id)"
-                        [attr.aria-label]="'Completar: ' + node.titulo"
-                      >
-                        @if (node.tipo === 'examen') { Iniciar examen } @else { Completar lección }
-                      </button>
+                      @if (node.tipo === 'leccion') {
+                        <a
+                          class="btn-empezar"
+                          [routerLink]="['/leccion', node.id]"
+                          [attr.aria-label]="'Ver lección: ' + node.titulo"
+                        >
+                          Ver lección →
+                        </a>
+                      } @else {
+                        <button
+                          class="btn-empezar"
+                          type="button"
+                          (click)="completarNodo(node, unit.id)"
+                          [attr.aria-label]="'Iniciar examen: ' + node.titulo"
+                        >
+                          Iniciar examen
+                        </button>
+                      }
                     }
 
                     @if (node.status === 'completada') {

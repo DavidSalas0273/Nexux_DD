@@ -61,6 +61,15 @@ export const routes: Routes = [
   },
 
   {
+    path: 'leccion/:nodeId',
+    canActivate: [levelSelectedGuard],
+    loadComponent: () =>
+      import('./features/lesson/lesson-player/lesson-player').then(
+        (m) => m.LessonPlayerComponent
+      ),
+  },
+
+  {
     path: 'aprender',
     canActivate: [levelSelectedGuard],
     loadComponent: () =>
