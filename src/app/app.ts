@@ -1,9 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
   imports: [RouterOutlet],
   selector: 'app-root',
-  template: '<router-outlet />',
+  styleUrl: './app.css',
+  templateUrl: './app.html',
 })
-export class App {}
+export class App {
+  protected readonly title = signal('nexus-dd');
+}
