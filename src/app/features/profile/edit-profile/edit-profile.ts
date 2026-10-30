@@ -7,6 +7,7 @@ import {
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { LearningService } from '../../../core/services/learning.service';
 import {
   CookingLevel,
   CookingLevelOption,
@@ -21,9 +22,10 @@ import {
   styleUrl: './edit-profile.css',
 })
 export class EditProfileComponent implements OnInit {
-  private auth   = inject(AuthService);
-  private fb     = inject(FormBuilder);
-  private router = inject(Router);
+  private auth     = inject(AuthService);
+  private fb       = inject(FormBuilder);
+  private router   = inject(Router);
+  private learning = inject(LearningService);
 
   readonly user   = this.auth.currentUser;
   readonly levels: CookingLevelOption[] = COOKING_LEVELS;
@@ -74,6 +76,10 @@ export class EditProfileComponent implements OnInit {
 
       // Actualizar nivel si cambió
       if (level && level !== this.user()?.cookingLevel) {
+        const uid = this.user()!.uid;
+        const oldLevel = this.user()!.cookingLevel!;
+        // Resetear progreso del nivel anterior antes de cambiar
+        this.learning.resetProgress(uid, oldLevel);
         this.auth.saveCookingLevel(level);
       }
 

@@ -88,6 +88,15 @@
   font-weight: 600;
 }
 
+.courses-link {
+  color: var(--color-primary, #6c47ff);
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.82rem;
+}
+
+.courses-link:hover { text-decoration: underline; }
+
 /* ── Unidades ────────────────────────────────────────────────────────────────── */
 .units-list {
   display: flex;

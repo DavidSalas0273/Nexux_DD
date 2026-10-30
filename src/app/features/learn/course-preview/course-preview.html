@@ -1,0 +1,90 @@
+<div class="preview-page">
+
+  <!-- ── Cabecera ──────────────────────────────────────────────────────────── -->
+  <header class="preview-header">
+    <a routerLink="/dashboard" class="btn-back" aria-label="Volver al dashboard">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+        stroke-linejoin="round" aria-hidden="true">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </a>
+    <div>
+      <h1 class="preview-title">Rutas de aprendizaje</h1>
+      <p class="preview-subtitle">Cada nivel tiene su propio curso</p>
+    </div>
+  </header>
+
+  <!-- ── Curso activo del usuario ──────────────────────────────────────────── -->
+  <section class="active-course-banner" aria-label="Tu curso actual">
+    <div class="active-course-info">
+      <span class="active-label">Tu curso actual</span>
+      <div class="active-course-main">
+        @for (course of allCourses; track course.level) {
+          @if (isCurrentLevel(course.level)) {
+            <span class="active-icon">{{ course.icon }}</span>
+            <div>
+              <h2 class="active-name">{{ course.label }}</h2>
+              <p class="active-desc">{{ course.description }}</p>
+              <div class="active-meta">
+                <span>📚 {{ course.units.length }} unidades</span>
+                <span>🔵 {{ totalNodos(course.units) }} nodos</span>
+                <span>⭐ {{ totalXP(course.units) }} XP posibles</span>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    </div>
+    <div class="active-course-actions">
+      <button class="btn btn--primary" (click)="irACurso()">
+        Ir a mi curso →
+      </button>
+      <button class="btn btn--secondary" (click)="cambiarNivel()">
+        ✏️ Cambiar nivel
+      </button>
+    </div>
+  </section>
+
+  <!-- ── Todos los cursos disponibles ─────────────────────────────────────── -->
+  <h2 class="section-title">Todos los cursos</h2>
+
+  <div class="courses-grid">
+    @for (course of allCourses; track course.level) {
+      <div
+        class="course-card"
+        [class.course-card--active]="isCurrentLevel(course.level)"
+        [attr.aria-label]="course.label + (isCurrentLevel(course.level) ? ' — tu nivel actual' : '')"
+      >
+        <!-- Badge nivel actual -->
+        @if (isCurrentLevel(course.level)) {
+          <span class="current-badge">Tu nivel</span>
+        }
+
+        <span class="course-icon">{{ course.icon }}</span>
+        <h3 class="course-name">{{ course.label }}</h3>
+        <p class="course-desc">{{ course.description }}</p>
+
+        <!-- Unidades del curso -->
+        <div class="course-units">
+          @for (unit of course.units; track unit.id) {
+            <div class="course-unit-row">
+              <span class="course-unit-icon">{{ unit.icon }}</span>
+              <div class="course-unit-info">
+                <span class="course-unit-title">{{ unit.titulo }}</span>
+                <span class="course-unit-nodes">{{ unit.nodos.length }} nodos</span>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Stats -->
+        <div class="course-stats">
+          <span>📚 {{ course.units.length }} unidades</span>
+          <span>⭐ {{ totalXP(course.units) }} XP</span>
+        </div>
+      </div>
+    }
+  </div>
+
+</div>
