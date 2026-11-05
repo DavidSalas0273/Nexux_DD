@@ -10,10 +10,16 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
+const pool = require('./config/database');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 
 const app = express();
+
+// Verificar conexión a PostgreSQL al arrancar
+pool.query('SELECT 1')
+  .then(() => console.log('✅ Conectado a PostgreSQL correctamente'))
+  .catch((err) => console.error('❌ Error al conectar a PostgreSQL:', err.message));
 
 // Middlewares
 app.use(cors());

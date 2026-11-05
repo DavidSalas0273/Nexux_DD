@@ -11,11 +11,14 @@ async function register(req, res) {
     const { nombre, correo, password } = req.body;
     const foto = req.file ? `/uploads/${req.file.filename}` : null;
 
+    console.log('[register] body recibido:', { nombre, correo, password: password ? '***' : undefined });
+
     if (!nombre || !correo || !password) {
       return res.status(400).json({ error: 'Nombre, correo y contraseña son obligatorios' });
     }
 
     // Verificar si el correo ya está registrado
+    console.log('[register] buscando usuario por correo...');
     const existingUser = await findUserByEmail(correo);
     if (existingUser) {
       return res.status(409).json({ error: 'El correo ya está registrado' });
@@ -26,12 +29,15 @@ async function register(req, res) {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // Crear el usuario
+    console.log('[register] creando usuario...');
     const user = await createUser({
       nombre,
       correo,
       password: hashedPassword,
       foto,
     });
+
+    console.log('[register] usuario creado con id:', user.id);
 
     // Generar token JWT
     const token = jwt.sign(
@@ -51,8 +57,9 @@ async function register(req, res) {
       },
     });
   } catch (error) {
-    console.error('Error en register:', error);
-    res.status(500).json({ error: 'Error interno del servidor' });
+    console.error('[register] ERROR DETALLADO:', error.message);
+    console.error('[register] STACK:', error.stack);
+    res.status(500).json({ error: 'Error interno del servidor', detalle: error.message });
   }
 }
 
@@ -63,6 +70,8 @@ async function register(req, res) {
 async function login(req, res) {
   try {
     const { correo, password } = req.body;
+
+    console.log('[login] intento de login para:', correo);
 
     if (!correo || !password) {
       return res.status(400).json({ error: 'Correo y contraseña son obligatorios' });
@@ -87,6 +96,8 @@ async function login(req, res) {
       { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
     );
 
+    console.log('[login] login exitoso para id:', user.id);
+
     res.json({
       message: 'Inicio de sesión exitoso',
       token,
@@ -98,8 +109,9 @@ async function login(req, res) {
       },
     });
   } catch (error) {
-    console.error('Error en login:', error);
-    res.status(500).json({ error: 'Error interno del servidor' });
+    console.error('[login] ERROR DETALLADO:', error.message);
+    console.error('[login] STACK:', error.stack);
+    res.status(500).json({ error: 'Error interno del servidor', detalle: error.message });
   }
 }
 
