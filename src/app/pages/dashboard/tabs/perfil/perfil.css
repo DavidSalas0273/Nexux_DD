@@ -1,0 +1,225 @@
+:host { display: block; }
+
+.perfil-container {
+  background: #fff;
+  min-height: 100%;
+}
+
+/* ── Header ───────────────────────────────────────── */
+.perfil-header {
+  background: #2e7d32;
+  padding: 2rem 1.5rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  color: #fff;
+}
+
+.avatar-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #fff;
+}
+
+.avatar-placeholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #f5a623;
+  color: #fff;
+  font-size: 2.2rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid rgba(255,255,255,0.4);
+}
+
+.perfil-nombre {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.perfil-meta {
+  font-size: 0.8rem;
+  opacity: 0.85;
+  margin: 0;
+}
+
+.nivel-badge {
+  margin-top: 0.3rem;
+  background: rgba(0,0,0,0.25);
+  border-radius: 20px;
+  padding: 0.3rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.btn-logout {
+  margin-top: 0.75rem;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.45);
+  border-radius: 20px;
+  color: rgba(255,255,255,0.85);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.3rem 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-logout:hover { background: rgba(255,255,255,0.15); }
+
+/* ── Secciones ────────────────────────────────────── */
+.seccion { padding: 1.25rem 1.25rem 0; }
+
+.seccion-titulo {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 0.85rem;
+}
+
+/* ── Stats Grid ───────────────────────────────────── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+.stat-card {
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 0.9rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.stat-texto { display: flex; flex-direction: column; }
+.stat-valor { font-size: 1.15rem; font-weight: 800; color: #111827; line-height: 1.1; }
+.stat-etiqueta { font-size: 0.75rem; color: #6b7280; margin-top: 0.1rem; }
+
+.stat-icon.orange { color: #ff6b35; }
+.stat-icon.gold   { color: #f5a623; }
+.stat-icon.gray   { color: #6b7280; }
+.stat-icon.green  { color: #2e7d32; }
+
+/* ── Insignias ────────────────────────────────────── */
+.insignias-grid {
+  display: flex;
+  gap: 1.1rem;
+  flex-wrap: wrap;
+}
+
+.insignia-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  width: 64px;
+}
+
+.insignia-circulo {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.insignia-circulo.bloqueada { background: #f3f4f6 !important; opacity: 0.6; }
+
+.insignia-nombre {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #374151;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.ins-icon.orange { color: #ff6b35; }
+.ins-icon.green  { color: #2e7d32; }
+.ins-icon.pink   { color: #e91e63; }
+.ins-icon.gray   { color: #9ca3af; }
+
+/* ════════════════════════════════════════
+   DESKTOP ≥ 900px
+════════════════════════════════════════ */
+@media (min-width: 900px) {
+
+  .perfil-container {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    grid-template-rows: auto 1fr;
+    background: #f9fafb;
+    min-height: 100%;
+  }
+
+  /* Header spans full width */
+  .perfil-header {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 2rem;
+    padding: 2rem 2.5rem;
+    border-radius: 0;
+  }
+
+  .perfil-header-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .avatar-placeholder,
+  .avatar-img {
+    width: 96px;
+    height: 96px;
+    font-size: 2.6rem;
+    flex-shrink: 0;
+  }
+
+  .perfil-nombre { font-size: 1.75rem; }
+
+  .btn-logout {
+    margin-top: 0;
+    margin-left: auto;
+  }
+
+  /* Left column: stats */
+  .perfil-left {
+    grid-column: 1;
+    padding: 1.75rem 1.5rem;
+    background: #fff;
+    border-right: 1px solid #e5e7eb;
+  }
+
+  /* Right column: insignias + activity */
+  .perfil-right {
+    grid-column: 2;
+    padding: 1.75rem 2rem;
+    background: #f9fafb;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .insignias-grid {
+    gap: 1.5rem;
+  }
+
+  .insignia-item { width: 72px; }
+
+  .insignia-circulo {
+    width: 72px;
+    height: 72px;
+  }
+}

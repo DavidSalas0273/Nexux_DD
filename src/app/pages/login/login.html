@@ -1,48 +1,88 @@
 <div class="auth-container">
-  <div class="auth-card">
-    <div class="auth-header">
-      <h1>Nexus DD</h1>
-      <p>Inicia sesión en tu cuenta</p>
+
+  <!-- Desktop: left hero panel -->
+  <div class="auth-hero">
+    <div class="hero-logo">
+      <div class="hero-logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" width="24" height="24">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <span class="hero-logo-text">NexusDD</span>
     </div>
 
-    @if (error()) {
-      <div class="alert alert-error">{{ error() }}</div>
-    }
-
-    <form (ngSubmit)="onSubmit()" class="auth-form">
-      <div class="form-group">
-        <label for="correo">Correo electrónico</label>
-        <input
-          type="email"
-          id="correo"
-          name="correo"
-          placeholder="tu@correo.com"
-          [ngModel]="correo()"
-          (ngModelChange)="correo.set($event)"
-          required
-        />
-      </div>
-
-      <div class="form-group">
-        <label for="password">Contraseña</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          placeholder="••••••••"
-          [ngModel]="password()"
-          (ngModelChange)="password.set($event)"
-          required
-        />
-      </div>
-
-      <button type="submit" class="btn-primary" [disabled]="loading()">
-        {{ loading() ? 'Cargando...' : 'Iniciar sesión' }}
-      </button>
-    </form>
-
-    <p class="auth-footer">
-      ¿No tienes cuenta? <a routerLink="/register">Regístrate aquí</a>
+    <h2 class="hero-titulo">Aprende a cocinar de forma inteligente</h2>
+    <p class="hero-subtitulo">
+      Lecciones cortas, retos diarios y un ranking que te motiva.
+      Cada día un nuevo paso hacia la cocina que siempre quisiste dominar.
     </p>
+
+    <div class="hero-badges">
+      <span class="hero-badge">🔥 Rachas diarias</span>
+      <span class="hero-badge">🏆 Ligas</span>
+      <span class="hero-badge">📚 Unidades temáticas</span>
+    </div>
   </div>
+
+  <!-- Form panel -->
+  <div class="auth-panel">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" width="26" height="26">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <h1>Bienvenido de vuelta</h1>
+        <p>Inicia sesión en tu cuenta</p>
+      </div>
+
+      @if (error()) {
+        <div class="alert alert-error">{{ error() }}</div>
+      }
+
+      <form (ngSubmit)="onSubmit()" class="auth-form">
+        <div class="form-group">
+          <label for="correo">Correo electrónico</label>
+          <input
+            type="email"
+            id="correo"
+            name="correo"
+            placeholder="tu@correo.com"
+            [ngModel]="correo()"
+            (ngModelChange)="correo.set($event)"
+            required
+            autocomplete="email"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="••••••••"
+            [ngModel]="password()"
+            (ngModelChange)="password.set($event)"
+            required
+            autocomplete="current-password"
+          />
+        </div>
+
+        <button type="submit" class="btn-primary" [disabled]="loading()">
+          {{ loading() ? 'Cargando...' : 'Iniciar sesión' }}
+        </button>
+      </form>
+
+      <p class="auth-footer">
+        ¿No tienes cuenta? <a routerLink="/register">Regístrate aquí</a>
+      </p>
+    </div>
+  </div>
+
 </div>

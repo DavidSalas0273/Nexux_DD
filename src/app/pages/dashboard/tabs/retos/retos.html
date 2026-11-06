@@ -1,0 +1,59 @@
+<div class="retos-container">
+  <div class="retos-header">
+    <h2>Retos</h2>
+    <p>Completa retos para ganar XP extra</p>
+  </div>
+
+  <!-- Desktop: grid 2-col. Mobile: stacked via retos-body -->
+  <div class="retos-body">
+
+    <section class="retos-seccion">
+      <h3 class="seccion-label">
+        <span class="dot diario"></span>
+        Retos de hoy
+      </h3>
+      <div class="retos-lista">
+        @for (reto of retosHoy; track reto.id) {
+          <div class="reto-card" [class.completado]="reto.completado">
+            <div class="reto-icono">{{ reto.icono }}</div>
+            <div class="reto-info">
+              <span class="reto-titulo">{{ reto.titulo }}</span>
+              <span class="reto-desc">{{ reto.descripcion }}</span>
+            </div>
+            <div class="reto-xp">
+              @if (reto.completado) {
+                <svg viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="3" width="22" height="22">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              } @else {
+                <span class="xp-badge">+{{ reto.xp }} XP</span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
+    <section class="retos-seccion">
+      <h3 class="seccion-label">
+        <span class="dot semanal"></span>
+        Retos de la semana
+      </h3>
+      <div class="retos-lista">
+        @for (reto of retosSemana; track reto.id) {
+          <div class="reto-card" [class.completado]="reto.completado">
+            <div class="reto-icono">{{ reto.icono }}</div>
+            <div class="reto-info">
+              <span class="reto-titulo">{{ reto.titulo }}</span>
+              <span class="reto-desc">{{ reto.descripcion }}</span>
+            </div>
+            <div class="reto-xp">
+              <span class="xp-badge semanal">+{{ reto.xp }} XP</span>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+
+  </div>
+</div>
