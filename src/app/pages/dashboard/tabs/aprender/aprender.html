@@ -46,10 +46,11 @@
     <div style="height: 2rem;"></div>
   </div>
 
-  <!-- Right: aside panel (desktop only) -->
+  <!-- Right: aside panel (desktop only, hidden on mobile via CSS) -->
   <aside class="aprender-aside">
+
     <div>
-      <div class="aside-title">Progreso actual</div>
+      <div class="aside-title">Unidad en curso</div>
       <div class="aside-unit-card" style="background: #2e7d32;">
         <div class="aside-unit-label">UNIDAD 2</div>
         <div class="aside-unit-name">Salsas madre</div>
@@ -59,8 +60,8 @@
 
     <div class="aside-progress-block">
       <div class="aside-progress-label">
-        <span>Progreso</span>
-        <span>2 / 5 lecciones</span>
+        <span>Lecciones completadas</span>
+        <span>2 / 5</span>
       </div>
       <div class="aside-progress-track">
         <div class="aside-progress-fill" style="width: 40%"></div>
@@ -69,7 +70,7 @@
 
     <div class="aside-progress-block">
       <div class="aside-progress-label">
-        <span>Racha actual</span>
+        <span>Racha activa</span>
         <span>🔥 12 días</span>
       </div>
       <div class="aside-progress-track">
@@ -77,10 +78,27 @@
       </div>
     </div>
 
+    <div class="aside-progress-block">
+      <div class="aside-progress-label">
+        <span>XP total</span>
+        <span>⭐ 1.840</span>
+      </div>
+      <div class="aside-progress-track">
+        <div class="aside-progress-fill" style="width: 45%; background: #3b82f6;"></div>
+      </div>
+    </div>
+
+    <div class="aside-divider"></div>
+
     <div class="aside-tip">
       <strong>💡 Consejo del día</strong>
-      Para evitar grumos en la bechamel, añade la leche tibia poco a poco sin dejar de batir.
+      Para evitar grumos en la bechamel, añade la leche tibia poco a poco sin dejar de batir con varillas.
     </div>
+
+    <button class="aside-cta" (click)="iniciarLeccionActiva()">
+      ▶ Continuar lección
+    </button>
+
   </aside>
 
 </div>

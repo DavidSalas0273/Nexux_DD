@@ -1,90 +1,156 @@
 <div class="quiz-container">
 
-  <!-- Top bar (siempre visible) -->
-  <div class="quiz-topbar">
-    <button class="btn-cerrar" (click)="cerrar()" aria-label="Cerrar quiz">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="22" height="22">
-        <line x1="18" y1="6" x2="6" y2="18"/>
-        <line x1="6" y1="6" x2="18" y2="18"/>
-      </svg>
-    </button>
-    <div class="progress-bar-wrapper">
-      <div class="progress-bar-track">
-        <div class="progress-bar-fill" [style.width.%]="progreso()"></div>
+  <!-- ══ PANTALLA DE RESULTADO FINAL ═══════════════ -->
+  @if (terminado()) {
+
+    <div class="resultado-container">
+      <div class="resultado-card">
+
+        <div class="resultado-icono" [class.perfecto]="estrellas === 3" [class.bien]="estrellas === 2" [class.regular]="estrellas === 1" [class.mal]="estrellas === 0">
+          @if (estrellas === 3) { 🏆 }
+          @else if (estrellas >= 1) { ⭐ }
+          @else { 💪 }
+        </div>
+
+        <h2 class="resultado-titulo">
+          @if (estrellas === 3) { ¡Lección perfecta! }
+          @else if (estrellas === 2) { ¡Muy bien! }
+          @else if (estrellas === 1) { ¡Buen intento! }
+          @else { ¡Sigue practicando! }
+        </h2>
+
+        <p class="resultado-subtitulo">Salsas madre · Lección 2</p>
+
+        <!-- Estrellas -->
+        <div class="estrellas-row">
+          @for (i of [1,2,3]; track i) {
+            <svg
+              class="estrella"
+              [class.llena]="i <= estrellas"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              width="40"
+              height="40"
+            >
+              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+            </svg>
+          }
+        </div>
+
+        <!-- Stats del resultado -->
+        <div class="resultado-stats">
+          <div class="res-stat">
+            <span class="res-stat-val">{{ aciertos() }}/{{ preguntas.length }}</span>
+            <span class="res-stat-lbl">Correctas</span>
+          </div>
+          <div class="res-stat-divider"></div>
+          <div class="res-stat">
+            <span class="res-stat-val">+{{ xpGanado }}</span>
+            <span class="res-stat-lbl">XP ganados</span>
+          </div>
+          <div class="res-stat-divider"></div>
+          <div class="res-stat">
+            <span class="res-stat-val">{{ vidas() }}</span>
+            <span class="res-stat-lbl">Vidas restantes</span>
+          </div>
+        </div>
+
+        <div class="resultado-acciones">
+          <button class="btn-continuar-lecciones" (click)="cerrar()">
+            Continuar
+          </button>
+        </div>
+
       </div>
     </div>
-    <div class="lives-indicator">
-      <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" class="heart-icon">
-        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-      </svg>
-      <span>{{ vidas() }}</span>
+
+  } @else {
+
+    <!-- ══ QUIZ ACTIVO ════════════════════════════ -->
+
+    <!-- Top bar -->
+    <div class="quiz-topbar">
+      <button class="btn-cerrar" (click)="cerrar()" aria-label="Cerrar quiz">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="22" height="22">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+      <div class="progress-bar-wrapper">
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" [style.width.%]="progreso()"></div>
+        </div>
+      </div>
+      <div class="lives-indicator">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+        <span>{{ vidas() }}</span>
+      </div>
     </div>
-  </div>
 
-  <!-- Desktop: two-column inner layout | Mobile: stacked -->
-  <div class="quiz-inner">
+    <!-- Content: pregunta + opciones -->
+    <div class="quiz-inner">
 
-    <!-- LEFT: pregunta -->
-    <div class="quiz-left">
-      <div class="quiz-body">
+      <div class="quiz-left">
         <div class="categoria-label">
           {{ preguntaActual().categoria }} · PASO {{ preguntaActual().paso }} DE {{ preguntaActual().totalPasos }}
         </div>
         <h2 class="pregunta-texto">{{ preguntaActual().texto }}</h2>
       </div>
+
+      <div class="quiz-right">
+        <div class="opciones-lista">
+          @for (opcion of preguntaActual().opciones; track $index) {
+            <button
+              class="opcion-btn"
+              [class]="getClaseOpcion($index)"
+              (click)="seleccionar($index)"
+              [disabled]="revisada()"
+            >
+              {{ opcion }}
+            </button>
+          }
+        </div>
+
+        <div class="quiz-footer">
+          @if (!revisada()) {
+            <button class="btn-comprobar" [disabled]="seleccionada() === null" (click)="comprobar()">
+              COMPROBAR
+            </button>
+          } @else {
+            <button class="btn-continuar" (click)="siguiente()">
+              CONTINUAR
+            </button>
+          }
+        </div>
+      </div>
+
     </div>
 
-    <!-- RIGHT: opciones + footer -->
-    <div class="quiz-right">
-      <div class="opciones-lista">
-        @for (opcion of preguntaActual().opciones; track $index) {
-          <button
-            class="opcion-btn"
-            [class]="getClaseOpcion($index)"
-            (click)="seleccionar($index)"
-            [disabled]="revisada()"
-          >
-            {{ opcion }}
-          </button>
-        }
+    <!-- Feedback banner -->
+    @if (revisada()) {
+      <div class="feedback-banner" [class.correcto]="correcta()" [class.incorrecto]="!correcta()">
+        <div class="feedback-icono">
+          @if (correcta()) {
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="26" height="26">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          } @else {
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="26" height="26">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          }
+        </div>
+        <div class="feedback-texto">
+          <span class="feedback-titulo">{{ correcta() ? '¡Correcto!' : 'Incorrecto' }}</span>
+          @if (!correcta()) {
+            <span class="feedback-detalle">Respuesta correcta: {{ preguntaActual().opciones[preguntaActual().correcta] }}</span>
+          }
+        </div>
       </div>
+    }
 
-      <div class="quiz-footer">
-        @if (!revisada()) {
-          <button class="btn-comprobar" [disabled]="seleccionada() === null" (click)="comprobar()">
-            COMPROBAR
-          </button>
-        } @else {
-          <button class="btn-continuar" (click)="siguiente()">
-            CONTINUAR
-          </button>
-        }
-      </div>
-    </div>
-
-  </div>
-
-  <!-- Feedback banner -->
-  @if (revisada()) {
-    <div class="feedback-banner" [class.correcto]="correcta()" [class.incorrecto]="!correcta()">
-      <div class="feedback-icono">
-        @if (correcta()) {
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="28" height="28">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-        } @else {
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="28" height="28">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
-        }
-      </div>
-      <div class="feedback-texto">
-        <span class="feedback-titulo">{{ correcta() ? '¡Correcto!' : 'Incorrecto' }}</span>
-        @if (!correcta()) {
-          <span class="feedback-detalle">Respuesta: {{ preguntaActual().opciones[preguntaActual().correcta] }}</span>
-        }
-      </div>
-    </div>
   }
 
 </div>

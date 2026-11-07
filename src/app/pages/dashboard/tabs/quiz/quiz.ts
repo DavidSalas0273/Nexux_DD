@@ -26,13 +26,15 @@ export class Quiz {
   seleccionada = signal<number | null>(null);
   revisada = signal(false);
   correcta = signal(false);
+  terminado = signal(false);
+  aciertos = signal(0);
 
   preguntas: Pregunta[] = [
     {
       id: 1,
       categoria: 'TÉCNICA',
       paso: 1,
-      totalPasos: 10,
+      totalPasos: 4,
       texto: '¿Cuál es el primer paso para hacer una bechamel?',
       opciones: ['Añadir la leche directamente', 'Derretir la mantequilla', 'Añadir la harina al fuego', 'Batir los huevos'],
       correcta: 1,
@@ -41,7 +43,7 @@ export class Quiz {
       id: 2,
       categoria: 'TÉCNICA',
       paso: 2,
-      totalPasos: 10,
+      totalPasos: 4,
       texto: '¿Qué es un roux?',
       opciones: ['Una mezcla de vino y caldo', 'Una mezcla de mantequilla y harina cocinadas', 'Un tipo de queso francés', 'Una técnica de corte'],
       correcta: 1,
@@ -50,7 +52,7 @@ export class Quiz {
       id: 3,
       categoria: 'TÉCNICA',
       paso: 3,
-      totalPasos: 10,
+      totalPasos: 4,
       texto: '¿A qué temperatura se cocina el roux?',
       opciones: ['A fuego alto', 'A fuego muy bajo', 'A fuego medio-bajo', 'En el horno a 200°'],
       correcta: 2,
@@ -59,7 +61,7 @@ export class Quiz {
       id: 4,
       categoria: 'TÉCNICA',
       paso: 4,
-      totalPasos: 10,
+      totalPasos: 4,
       texto: '¿Cómo evitas que la bechamel quede con grumos?',
       opciones: [
         'Añadir la leche fría de golpe',
@@ -74,7 +76,23 @@ export class Quiz {
   preguntaIndex = signal(0);
 
   preguntaActual = computed(() => this.preguntas[this.preguntaIndex()]);
-  progreso = computed(() => (this.preguntaActual().paso / this.preguntaActual().totalPasos) * 100);
+  progreso = computed(() =>
+    this.terminado()
+      ? 100
+      : ((this.preguntaActual().paso - 1) / this.preguntaActual().totalPasos) * 100
+  );
+
+  get xpGanado(): number {
+    return this.aciertos() * 15;
+  }
+
+  get estrellas(): number {
+    const ratio = this.aciertos() / this.preguntas.length;
+    if (ratio === 1) return 3;
+    if (ratio >= 0.75) return 2;
+    if (ratio >= 0.5) return 1;
+    return 0;
+  }
 
   seleccionar(index: number) {
     if (this.revisada()) return;
@@ -86,7 +104,9 @@ export class Quiz {
     const esCorrecta = this.seleccionada() === this.preguntaActual().correcta;
     this.revisada.set(true);
     this.correcta.set(esCorrecta);
-    if (!esCorrecta) {
+    if (esCorrecta) {
+      this.aciertos.update(a => a + 1);
+    } else {
       this.vidas.update(v => Math.max(0, v - 1));
     }
   }
@@ -98,7 +118,7 @@ export class Quiz {
       this.revisada.set(false);
       this.correcta.set(false);
     } else {
-      this.router.navigate(['/dashboard/aprender']);
+      this.terminado.set(true);
     }
   }
 

@@ -75,4 +75,15 @@ export class Aprender {
     if (leccion.estado === 'bloqueada') return;
     this.router.navigate(['/dashboard/quiz', leccion.id]);
   }
+
+  iniciarLeccionActiva() {
+    // Busca la primera lección activa de todas las unidades
+    for (const unidad of this.unidades()) {
+      const activa = unidad.lecciones.find(l => l.estado === 'activa');
+      if (activa) {
+        this.router.navigate(['/dashboard/quiz', activa.id]);
+        return;
+      }
+    }
+  }
 }
