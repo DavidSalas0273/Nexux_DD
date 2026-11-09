@@ -1,0 +1,107 @@
+:host { display: block; }
+
+.retos-container {
+  padding: 0 0 2rem;
+  background: #fff;
+  min-height: 100%;
+}
+
+.retos-header {
+  background: #2e7d32;
+  padding: 1.5rem 1.25rem 1.25rem;
+  color: #fff;
+}
+.retos-header h2 { font-size: 1.4rem; font-weight: 800; margin: 0 0 0.2rem; }
+.retos-header p  { font-size: 0.82rem; opacity: 0.85; margin: 0; }
+
+.retos-seccion { padding: 1.25rem 1.25rem 0; }
+
+.seccion-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 0.85rem;
+}
+
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.dot.diario  { background: #f5a623; }
+.dot.semanal { background: #3b82f6; }
+
+.retos-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-bottom: 1.5rem;
+}
+
+.reto-card {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.95rem 1rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 14px;
+  background: #fff;
+  transition: all 0.2s;
+}
+.reto-card.completado { background: #f0fdf4; border-color: #86efac; }
+
+.reto-icono { font-size: 1.6rem; flex-shrink: 0; width: 40px; text-align: center; }
+
+.reto-info { flex: 1; display: flex; flex-direction: column; gap: 0.15rem; }
+.reto-titulo { font-size: 0.9rem; font-weight: 700; color: #111827; }
+.reto-desc   { font-size: 0.76rem; color: #6b7280; }
+
+.reto-xp { flex-shrink: 0; }
+
+.xp-badge {
+  background: #fff3e0;
+  color: #f5a623;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+.xp-badge.semanal { background: #eff6ff; color: #3b82f6; }
+
+/* ════════════════════════════════════════
+   DESKTOP ≥ 900px
+════════════════════════════════════════ */
+@media (min-width: 900px) {
+
+  .retos-container {
+    background: #f9fafb;
+  }
+
+  .retos-header {
+    padding: 2rem 2.5rem 1.75rem;
+    border-radius: 0;
+  }
+  .retos-header h2 { font-size: 1.75rem; }
+
+  .retos-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    padding: 2rem 2.5rem;
+  }
+
+  .retos-seccion {
+    padding: 0;
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+
+  .reto-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transform: translateY(-1px);
+  }
+}

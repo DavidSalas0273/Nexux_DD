@@ -1,0 +1,92 @@
+<div class="perfil-container">
+
+  <!-- Header verde con avatar -->
+  <div class="perfil-header">
+    <div class="avatar-wrapper">
+      @if (fotoUrl) {
+        <img [src]="fotoUrl" alt="Foto de perfil" class="avatar-img" />
+      } @else {
+        <div class="avatar-placeholder">{{ inicial }}</div>
+      }
+    </div>
+
+    <div class="perfil-header-info">
+      <h2 class="perfil-nombre">{{ user()?.nombre }}</h2>
+      <p class="perfil-meta">{{ nombreUsuario }} · Se unió en 2026</p>
+      <div class="nivel-badge">Nivel: Cocinero/a casero/a</div>
+    </div>
+
+    <button class="btn-logout" (click)="logout()">Cerrar sesión</button>
+  </div>
+
+  <!-- Left: Estadísticas -->
+  <div class="perfil-left">
+    <section class="seccion" style="padding: 0 0 1.25rem;">
+      <h3 class="seccion-titulo">Estadísticas</h3>
+      <div class="stats-grid">
+        @for (stat of estadisticas; track stat.etiqueta) {
+          <div class="stat-card">
+            @if (stat.icono === 'streak') {
+              <svg class="stat-icon orange" viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
+                <path d="M13.5 0.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5 0.67z"/>
+              </svg>
+            } @else if (stat.icono === 'star') {
+              <svg class="stat-icon gold" viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
+                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+              </svg>
+            } @else if (stat.icono === 'trophy') {
+              <svg class="stat-icon gray" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
+                <polyline points="6 9 6 2 18 2 18 9"/>
+                <path d="M6 18H4a2 2 0 01-2-2v-1a2 2 0 012-2h16a2 2 0 012 2v1a2 2 0 01-2 2h-2"/>
+                <rect x="6" y="18" width="12" height="4"/>
+              </svg>
+            } @else if (stat.icono === 'recipe') {
+              <svg class="stat-icon green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
+                <path d="M12 2C8 2 5 5 5 9c0 2.4 1.1 4.5 2.8 5.9L9 22h6l1.2-7.1C17.9 13.5 19 11.4 19 9c0-4-3-7-7-7z"/>
+              </svg>
+            }
+            <div class="stat-texto">
+              <span class="stat-valor">{{ stat.valor }}</span>
+              <span class="stat-etiqueta">{{ stat.etiqueta }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+  </div>
+
+  <!-- Right: Insignias -->
+  <div class="perfil-right">
+    <section class="seccion" style="padding: 0;">
+      <h3 class="seccion-titulo">Insignias</h3>
+      <div class="insignias-grid">
+        @for (ins of insignias; track ins.nombre) {
+          <div class="insignia-item">
+            <div class="insignia-circulo" [style.background-color]="ins.color" [class.bloqueada]="!ins.desbloqueada">
+              @if (ins.icono === 'streak') {
+                <svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26" class="ins-icon orange">
+                  <path d="M13.5 0.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5 0.67z"/>
+                </svg>
+              } @else if (ins.icono === 'leaf') {
+                <svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26" class="ins-icon green">
+                  <path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 008 20C19 20 22 3 22 3c-1 2-8 2-8 2v2c-3 0-5 2-6 4 1-1 4-2 6-2v2z"/>
+                </svg>
+              } @else if (ins.icono === 'recipe') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="26" height="26" class="ins-icon pink">
+                  <path d="M12 2C8 2 5 5 5 9c0 2.4 1.1 4.5 2.8 5.9L9 22h6l1.2-7.1C17.9 13.5 19 11.4 19 9c0-4-3-7-7-7z"/>
+                </svg>
+              } @else if (ins.icono === 'lock') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="26" height="26" class="ins-icon gray">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                  <path d="M7 11V7a5 5 0 0110 0v4"/>
+                </svg>
+              }
+            </div>
+            <span class="insignia-nombre">{{ ins.nombre }}</span>
+          </div>
+        }
+      </div>
+    </section>
+  </div>
+
+</div>

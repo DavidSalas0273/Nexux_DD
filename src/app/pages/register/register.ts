@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -14,6 +14,8 @@ export class Register {
   private authService = inject(AuthService);
   private router = inject(Router);
 
+  @ViewChild('platosList') platosListRef!: ElementRef<HTMLDivElement>;
+
   nombre = signal('');
   correo = signal('');
   password = signal('');
@@ -21,6 +23,11 @@ export class Register {
   fotoPreview = signal<string | null>(null);
   error = signal('');
   loading = signal(false);
+
+  scrollPlatos(dir: -1 | 1) {
+    const el = this.platosListRef?.nativeElement;
+    if (el) el.scrollBy({ left: dir * 220, behavior: 'smooth' });
+  }
 
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
