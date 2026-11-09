@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -14,10 +14,20 @@ export class Login {
   private authService = inject(AuthService);
   private router = inject(Router);
 
+  @ViewChild('platosList') platosListRef!: ElementRef<HTMLDivElement>;
+
   correo = signal('');
   password = signal('');
   error = signal('');
   loading = signal(false);
+
+  /** Desplaza la barra de platos. dir: -1 izquierda, 1 derecha */
+  scrollPlatos(dir: -1 | 1) {
+    const el = this.platosListRef?.nativeElement;
+    if (el) {
+      el.scrollBy({ left: dir * 220, behavior: 'smooth' });
+    }
+  }
 
   onSubmit() {
     if (!this.correo() || !this.password()) {
