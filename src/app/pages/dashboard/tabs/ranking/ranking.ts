@@ -13,10 +13,10 @@ type TabRanking = 'diario' | 'semanal';
 export class Ranking implements OnInit {
   private retosService = inject(RetosService);
 
-  tab = signal<TabRanking>('diario');
-  jugadoresDiario = signal<JugadorRanking[]>([]);
-  jugadoresSemanal = signal<JugadorRanking[]>([]);
-  cargando = signal(true);
+  tab                 = signal<TabRanking>('diario');
+  jugadoresDiario     = signal<JugadorRanking[]>([]);
+  jugadoresSemanal    = signal<JugadorRanking[]>([]);
+  cargando            = signal(true);
 
   get jugadores(): JugadorRanking[] {
     return this.tab() === 'diario' ? this.jugadoresDiario() : this.jugadoresSemanal();
@@ -60,11 +60,22 @@ export class Ranking implements OnInit {
     return '';
   }
 
+  getPremio(pos: number): string {
+    if (pos === 1) return '💎 500';
+    if (pos === 2) return '💎 300';
+    if (pos === 3) return '💎 150';
+    return '';
+  }
+
   maxXp(): number {
     return this.jugadores[0]?.xp || 1;
   }
 
   posicionUsuario(): number {
     return this.jugadores.find(j => j.esUsuario)?.posicion ?? 0;
+  }
+
+  diamantesUsuario(): number {
+    return this.jugadores.find(j => j.esUsuario)?.diamantes ?? 0;
   }
 }

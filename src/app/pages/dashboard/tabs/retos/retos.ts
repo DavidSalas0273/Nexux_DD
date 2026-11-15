@@ -11,15 +11,17 @@ import { RetosService, Reto } from '../../../../services/retos.service';
 export class Retos implements OnInit {
   private retosService = inject(RetosService);
 
-  retosHoy = signal<Reto[]>([]);
+  retosHoy    = signal<Reto[]>([]);
   retosSemana = signal<Reto[]>([]);
-  xpTotal = signal<number>(0);
-  cargando = signal(true);
-  mensajeXP = signal<string | null>(null);
+  xpTotal     = signal<number>(0);
+  diamantes   = signal<number>(0);
+  cargando    = signal(true);
+  mensajeXP   = signal<string | null>(null);
   completando = signal<number | null>(null);
 
   ngOnInit(): void {
     this.cargarRetos();
+    this.cargarDiamantes();
   }
 
   cargarRetos(): void {
@@ -30,9 +32,14 @@ export class Retos implements OnInit {
         this.retosSemana.set(data.semanales);
         this.cargando.set(false);
       },
-      error: () => {
-        this.cargando.set(false);
-      },
+      error: () => this.cargando.set(false),
+    });
+  }
+
+  cargarDiamantes(): void {
+    this.retosService.getMisDiamantes().subscribe({
+      next: (res) => this.diamantes.set(res.diamantes),
+      error: () => {},
     });
   }
 
@@ -48,8 +55,7 @@ export class Retos implements OnInit {
         this.completando.set(null);
       },
       error: (err) => {
-        const msg = err.error?.error ?? 'Error al completar el reto';
-        this.mostrarMensaje(msg);
+        this.mostrarMensaje(err.error?.error ?? 'Error al completar el reto');
         this.completando.set(null);
       },
     });
@@ -60,19 +66,18 @@ export class Retos implements OnInit {
     setTimeout(() => this.mensajeXP.set(null), 3000);
   }
 
-  xpDiarioCompletado(): number {
-    return this.retosHoy().filter(r => r.completado).reduce((s, r) => s + r.xp, 0);
-  }
+  xpDiarioCompletado():  number { return this.retosHoy().filter(r => r.completado).reduce((s, r) => s + r.xp, 0); }
+  xpDiarioTotal():       number { return this.retosHoy().reduce((s, r) => s + r.xp, 0); }
+  xpSemanalCompletado(): number { return this.retosSemana().filter(r => r.completado).reduce((s, r) => s + r.xp, 0); }
+  xpSemanalTotal():      number { return this.retosSemana().reduce((s, r) => s + r.xp, 0); }
 
-  xpDiarioTotal(): number {
-    return this.retosHoy().reduce((s, r) => s + r.xp, 0);
-  }
-
-  xpSemanalCompletado(): number {
-    return this.retosSemana().filter(r => r.completado).reduce((s, r) => s + r.xp, 0);
-  }
-
-  xpSemanalTotal(): number {
-    return this.retosSemana().reduce((s, r) => s + r.xp, 0);
+  etiquetaCategoria(cat: string): string {
+    const map: Record<string, string> = {
+      fundamentos: '🔪 Fundamentos',
+      salsas:      '🍲 Salsas madre',
+      proteinas:   '🥩 Proteínas',
+      general:     '',
+    };
+    return map[cat] ?? '';
   }
 }

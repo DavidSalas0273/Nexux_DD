@@ -13,10 +13,20 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 1rem;
 }
-.ranking-header h2 { font-size: 1.4rem; font-weight: 800; margin: 0; }
+.ranking-header h2  { font-size: 1.4rem; font-weight: 800; margin: 0 0 0.15rem; }
+.ranking-sub        { font-size: 0.8rem; opacity: 0.85; margin: 0; }
 
-.liga-badge {
+.header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.liga-badge, .diamantes-badge {
   display: flex;
   align-items: center;
   gap: 0.35rem;
@@ -25,6 +35,17 @@
   padding: 0.3rem 0.8rem;
   font-size: 0.82rem;
   font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Premio aviso */
+.premio-aviso {
+  background: #fffbeb;
+  border-bottom: 1px solid #fde68a;
+  padding: 0.65rem 1.25rem;
+  font-size: 0.8rem;
+  color: #78350f;
+  text-align: center;
 }
 
 /* Tabs */
@@ -46,7 +67,6 @@
   cursor: pointer;
   transition: all 0.2s;
 }
-
 .tab-btn.activo {
   background: #2e7d32;
   color: #fff;
@@ -77,7 +97,9 @@
   border: 1.5px solid #f3f4f6;
   transition: all 0.2s;
 }
-.jugador-fila.yo { background: #f0fdf4; border-color: #86efac; }
+.jugador-fila.yo   { background: #f0fdf4; border-color: #86efac; }
+.jugador-fila.top3 { border-color: #fde68a; background: #fffdf0; }
+.jugador-fila.top3.yo { border-color: #86efac; background: #f0fdf4; }
 
 .posicion {
   width: 28px;
@@ -120,8 +142,16 @@
   text-overflow: ellipsis;
 }
 
-.yo-label { font-size: 0.75rem; color: #2e7d32; font-weight: 600; margin-left: 0.3rem; }
+.yo-label   { font-size: 0.75rem; color: #2e7d32; font-weight: 600; margin-left: 0.3rem; }
 .jugador-xp { font-size: 0.75rem; color: #6b7280; font-weight: 600; }
+
+.jugador-derecha {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
 
 .xp-bar-wrapper {
   width: 60px;
@@ -129,7 +159,6 @@
   background: #e5e7eb;
   border-radius: 99px;
   overflow: hidden;
-  flex-shrink: 0;
 }
 .xp-bar-fill {
   height: 100%;
@@ -138,14 +167,17 @@
   transition: width 0.5s ease;
 }
 
-/* ════════════════════════════════════════
-   DESKTOP ≥ 900px
-════════════════════════════════════════ */
+.premio-diamantes {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #0369a1;
+  white-space: nowrap;
+}
+
+/* ════════════ DESKTOP ════════════ */
 @media (min-width: 900px) {
 
-  .ranking-container {
-    background: #f9fafb;
-  }
+  .ranking-container { background: #f9fafb; }
 
   .ranking-header {
     padding: 2rem 2.5rem 1.75rem;
@@ -161,10 +193,9 @@
   }
 
   .ranking-lista {
-    padding: 0;
+    padding: 1.25rem;
     background: #fff;
     border-radius: 16px;
-    padding: 1.25rem;
     box-shadow: 0 1px 4px rgba(0,0,0,0.06);
   }
 
@@ -184,7 +215,6 @@
 
   .xp-bar-wrapper { width: 90px; height: 8px; }
 
-  /* Side panel with podium */
   .ranking-aside {
     display: flex;
     flex-direction: column;
@@ -216,11 +246,11 @@
   }
   .podium-row:last-child { border-bottom: none; }
 
-  .podium-medal { font-size: 1.4rem; width: 30px; text-align: center; }
-
-  .podium-info { flex: 1; }
+  .podium-medal  { font-size: 1.4rem; width: 30px; text-align: center; }
+  .podium-info   { flex: 1; }
   .podium-nombre { font-size: 0.9rem; font-weight: 700; color: #111827; }
   .podium-xp     { font-size: 0.75rem; color: #6b7280; }
+  .podium-premio { font-size: 0.78rem; font-weight: 700; color: #0369a1; white-space: nowrap; }
 
   .liga-card {
     background: #2e7d32;
@@ -232,7 +262,8 @@
     gap: 0.4rem;
   }
 
-  .liga-card-label { font-size: 0.72rem; opacity: 0.8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
-  .liga-card-name  { font-size: 1.4rem; font-weight: 800; }
-  .liga-card-sub   { font-size: 0.78rem; opacity: 0.85; }
+  .liga-card-label     { font-size: 0.72rem; opacity: 0.8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+  .liga-card-name      { font-size: 1.4rem; font-weight: 800; }
+  .liga-card-sub       { font-size: 0.78rem; opacity: 0.85; }
+  .liga-card-diamantes { font-size: 0.82rem; font-weight: 700; margin-top: 0.2rem; opacity: 0.95; }
 }

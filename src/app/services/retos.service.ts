@@ -9,6 +9,7 @@ export interface Reto {
   icono: string;
   xp: number;
   tipo: 'diario' | 'semanal';
+  categoria: string;
   completado: boolean;
 }
 
@@ -29,6 +30,8 @@ export interface JugadorRanking {
   nombre: string;
   foto: string | null;
   xp: number;
+  diamantes: number;
+  premioDiamantes: number;
   esUsuario: boolean;
 }
 
@@ -51,5 +54,9 @@ export class RetosService {
 
   getRankingSemanal(): Observable<JugadorRanking[]> {
     return this.http.get<JugadorRanking[]>(`${this.API}/ranking/semanal`);
+  }
+
+  getMisDiamantes(): Observable<{ diamantes: number }> {
+    return this.http.get<{ diamantes: number }>(`${this.API}/mis-diamantes`);
   }
 }

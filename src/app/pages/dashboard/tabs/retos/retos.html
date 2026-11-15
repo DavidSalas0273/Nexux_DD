@@ -2,11 +2,14 @@
   <div class="retos-header">
     <div>
       <h2>Retos</h2>
-      <p>Completa retos para ganar XP extra</p>
+      <p>Completa retos para ganar XP y subir en el ranking</p>
     </div>
-    @if (xpTotal() > 0) {
-      <div class="xp-total-badge">{{ xpTotal() | number }} XP total</div>
-    }
+    <div class="header-badges">
+      @if (xpTotal() > 0) {
+        <div class="badge-xp">⭐ {{ xpTotal() | number }} XP</div>
+      }
+      <div class="badge-diamantes">💎 {{ diamantes() | number }}</div>
+    </div>
   </div>
 
   @if (mensajeXP()) {
@@ -28,13 +31,11 @@
           </h3>
           <span class="progreso-texto">{{ xpDiarioCompletado() }}/{{ xpDiarioTotal() }} XP</span>
         </div>
-
         <div class="progreso-bar-wrapper">
           <div class="progreso-bar-fill diario"
                [style.width.%]="xpDiarioTotal() ? (xpDiarioCompletado() / xpDiarioTotal()) * 100 : 0">
           </div>
         </div>
-
         <div class="retos-lista">
           @for (reto of retosHoy(); track reto.id) {
             <div class="reto-card" [class.completado]="reto.completado">
@@ -42,6 +43,9 @@
               <div class="reto-info">
                 <span class="reto-titulo">{{ reto.titulo }}</span>
                 <span class="reto-desc">{{ reto.descripcion }}</span>
+                @if (etiquetaCategoria(reto.categoria)) {
+                  <span class="reto-categoria">{{ etiquetaCategoria(reto.categoria) }}</span>
+                }
               </div>
               <div class="reto-accion">
                 @if (reto.completado) {
@@ -49,15 +53,9 @@
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
                 } @else {
-                  <button
-                    class="btn-completar"
-                    [disabled]="completando() === reto.id"
-                    (click)="completar(reto)">
-                    @if (completando() === reto.id) {
-                      ⏳
-                    } @else {
-                      <span class="xp-badge">+{{ reto.xp }} XP</span>
-                    }
+                  <button class="btn-completar" [disabled]="completando() === reto.id" (click)="completar(reto)">
+                    @if (completando() === reto.id) { ⏳ }
+                    @else { <span class="xp-badge">+{{ reto.xp }} XP</span> }
                   </button>
                 }
               </div>
@@ -75,13 +73,11 @@
           </h3>
           <span class="progreso-texto">{{ xpSemanalCompletado() }}/{{ xpSemanalTotal() }} XP</span>
         </div>
-
         <div class="progreso-bar-wrapper">
           <div class="progreso-bar-fill semanal"
                [style.width.%]="xpSemanalTotal() ? (xpSemanalCompletado() / xpSemanalTotal()) * 100 : 0">
           </div>
         </div>
-
         <div class="retos-lista">
           @for (reto of retosSemana(); track reto.id) {
             <div class="reto-card" [class.completado]="reto.completado">
@@ -89,6 +85,9 @@
               <div class="reto-info">
                 <span class="reto-titulo">{{ reto.titulo }}</span>
                 <span class="reto-desc">{{ reto.descripcion }}</span>
+                @if (etiquetaCategoria(reto.categoria)) {
+                  <span class="reto-categoria">{{ etiquetaCategoria(reto.categoria) }}</span>
+                }
               </div>
               <div class="reto-accion">
                 @if (reto.completado) {
@@ -96,15 +95,9 @@
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
                 } @else {
-                  <button
-                    class="btn-completar"
-                    [disabled]="completando() === reto.id"
-                    (click)="completar(reto)">
-                    @if (completando() === reto.id) {
-                      ⏳
-                    } @else {
-                      <span class="xp-badge semanal">+{{ reto.xp }} XP</span>
-                    }
+                  <button class="btn-completar" [disabled]="completando() === reto.id" (click)="completar(reto)">
+                    @if (completando() === reto.id) { ⏳ }
+                    @else { <span class="xp-badge semanal">+{{ reto.xp }} XP</span> }
                   </button>
                 }
               </div>
