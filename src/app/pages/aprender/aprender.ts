@@ -3,6 +3,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Icono } from './icono';
+import { ProgresoService } from '../../services/progreso.service';
 
 export interface Pregunta {
   id: number;
@@ -36,6 +37,34 @@ export interface Unidad {
 })
 export class Aprender {
   private router = Router;
+  private progresoService = inject(ProgresoService);
+
+  constructor() {
+    // Trae el avance guardado en el backend y lo une con la copia local,
+    // por si algún nivel se completó sin conexión.
+    this.progresoService.cargar().subscribe({
+      next: (delServidor) => {
+        const locales = this.nivelesCompletados();
+        const soloLocales = locales.filter((id) => !delServidor.includes(id));
+        const unidos = this.soloNivelesValidos([...delServidor, ...soloLocales]);
+        this.nivelesCompletados.set(unidos);
+        this.progresoService.guardarLocal(unidos);
+        for (const id of soloLocales) {
+          const total = this.niveles[id - 1]?.preguntas.length ?? 0;
+          this.progresoService.guardar(id, 0, total).subscribe({ error: () => {} });
+        }
+      },
+      error: () => {
+        // Sin backend se sigue con la copia local
+      },
+    });
+  }
+
+  private soloNivelesValidos(ids: number[]): number[] {
+    return [...new Set(ids)]
+      .filter((id) => id >= 1 && id <= this.niveles.length)
+      .sort((a, b) => a - b);
+  }
 
   // Estado del video: la unidad cuyo video está abierto
   videoAbierto = signal<Unidad | null>(null);
@@ -502,7 +531,7 @@ export class Aprender {
   respuestaSeleccionada = signal<number | null>(null);
   mostrarResultado = signal(false);
   nivelCompletado = signal(false);
-  nivelesCompletados = signal<number[]>([]);
+  nivelesCompletados = signal<number[]>(this.progresoService.leerLocal());
   puntaje = signal(0);
 
   preguntaActual = computed(() => {
@@ -575,6 +604,9 @@ export class Aprender {
       if (!this.nivelesCompletados().includes(nivelId)) {
         this.nivelesCompletados.update(n => [...n, nivelId]);
       }
+      // Guarda el avance del usuario (también actualiza su mejor puntaje)
+      this.progresoService.guardarLocal(this.nivelesCompletados());
+      this.progresoService.guardar(nivelId, this.puntaje(), this.totalPreguntas()).subscribe({ error: () => {} });
     } else {
       this.preguntaIndex.set(idx);
       this.respuestaSeleccionada.set(null);

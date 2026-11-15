@@ -13,12 +13,15 @@ if (!fs.existsSync(uploadsDir)) {
 const pool = require('./config/database');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
+const progressRoutes = require('./routes/progressRoutes');
+const { ensureProgressTable } = require('./queries/progressQueries');
 
 const app = express();
 
 // Verificar conexión a PostgreSQL al arrancar
 pool.query('SELECT 1')
   .then(() => console.log('✅ Conectado a PostgreSQL correctamente'))
+  .then(() => ensureProgressTable())
   .catch((err) => console.error('❌ Error al conectar a PostgreSQL:', err.message));
 
 // Middlewares
@@ -32,6 +35,7 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 // Rutas
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/progress', progressRoutes);
 
 // Ruta de health check
 app.get('/api/health', (req, res) => {

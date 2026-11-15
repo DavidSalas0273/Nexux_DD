@@ -17,6 +17,19 @@ async function initDatabase() {
     `);
 
     console.log('Tabla "usuarios" creada correctamente');
+
+    // Crear tabla de progreso de niveles (Aprender)
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS progreso_niveles (
+        usuario_id INTEGER NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+        nivel_id INTEGER NOT NULL,
+        mejor_puntaje INTEGER NOT NULL DEFAULT 0,
+        total_preguntas INTEGER NOT NULL DEFAULT 0,
+        completado_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (usuario_id, nivel_id)
+      );
+    `);
+    console.log('Tabla "progreso_niveles" creada correctamente');
     console.log('Base de datos inicializada con éxito');
 
     process.exit(0);
