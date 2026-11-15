@@ -1,15 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-interface Reto {
-  id: number;
-  titulo: string;
-  descripcion: string;
-  xp: number;
-  icono: string;
-  completado: boolean;
-  tipo: 'diario' | 'semanal';
-}
+import { RetosService, Reto } from '../../../../services/retos.service';
 
 @Component({
   selector: 'app-retos',
@@ -17,15 +8,76 @@ interface Reto {
   templateUrl: './retos.html',
   styleUrl: './retos.css',
 })
-export class Retos {
-  retosHoy: Reto[] = [
-    { id: 1, titulo: 'Completa 3 lecciones', descripcion: 'Termina 3 lecciones hoy', xp: 50, icono: '📚', completado: true, tipo: 'diario' },
-    { id: 2, titulo: 'Racha perfecta', descripcion: 'No pierdas ningún corazón', xp: 30, icono: '❤️', completado: false, tipo: 'diario' },
-    { id: 3, titulo: 'Velocista', descripcion: 'Responde en menos de 5 seg', xp: 20, icono: '⚡', completado: false, tipo: 'diario' },
-  ];
+export class Retos implements OnInit {
+  private retosService = inject(RetosService);
 
-  retosSemana: Reto[] = [
-    { id: 4, titulo: 'Maestro de salsas', descripcion: 'Completa la unidad de salsas madre', xp: 150, icono: '🍲', completado: false, tipo: 'semanal' },
-    { id: 5, titulo: 'Sin errores', descripcion: 'Completa 5 lecciones sin fallos', xp: 100, icono: '🎯', completado: false, tipo: 'semanal' },
-  ];
+  retosHoy    = signal<Reto[]>([]);
+  retosSemana = signal<Reto[]>([]);
+  xpTotal     = signal<number>(0);
+  diamantes   = signal<number>(0);
+  cargando    = signal(true);
+  mensajeXP   = signal<string | null>(null);
+  completando = signal<number | null>(null);
+
+  ngOnInit(): void {
+    this.cargarRetos();
+    this.cargarDiamantes();
+  }
+
+  cargarRetos(): void {
+    this.cargando.set(true);
+    this.retosService.getRetos().subscribe({
+      next: (data) => {
+        this.retosHoy.set(data.diarios);
+        this.retosSemana.set(data.semanales);
+        this.cargando.set(false);
+      },
+      error: () => this.cargando.set(false),
+    });
+  }
+
+  cargarDiamantes(): void {
+    this.retosService.getMisDiamantes().subscribe({
+      next: (res) => this.diamantes.set(res.diamantes),
+      error: () => {},
+    });
+  }
+
+  completar(reto: Reto): void {
+    if (reto.completado || this.completando() !== null) return;
+    this.completando.set(reto.id);
+
+    this.retosService.completarReto(reto.id).subscribe({
+      next: (res) => {
+        this.xpTotal.set(res.xpTotal);
+        this.mostrarMensaje(`+${res.xpGanado} XP ganados 🎉`);
+        this.cargarRetos();
+        this.completando.set(null);
+      },
+      error: (err) => {
+        this.mostrarMensaje(err.error?.error ?? 'Error al completar el reto');
+        this.completando.set(null);
+      },
+    });
+  }
+
+  private mostrarMensaje(texto: string): void {
+    this.mensajeXP.set(texto);
+    setTimeout(() => this.mensajeXP.set(null), 3000);
+  }
+
+  xpDiarioCompletado():  number { return this.retosHoy().filter(r => r.completado).reduce((s, r) => s + r.xp, 0); }
+  xpDiarioTotal():       number { return this.retosHoy().reduce((s, r) => s + r.xp, 0); }
+  xpSemanalCompletado(): number { return this.retosSemana().filter(r => r.completado).reduce((s, r) => s + r.xp, 0); }
+  xpSemanalTotal():      number { return this.retosSemana().reduce((s, r) => s + r.xp, 0); }
+
+  etiquetaCategoria(cat: string): string {
+    const map: Record<string, string> = {
+      fundamentos: '🔪 Fundamentos',
+      salsas:      '🍲 Salsas madre',
+      proteinas:   '🥩 Proteínas',
+      general:     '',
+    };
+    return map[cat] ?? '';
+  }
 }

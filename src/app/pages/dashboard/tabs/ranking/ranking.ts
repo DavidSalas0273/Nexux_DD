@@ -1,14 +1,8 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
-import { AuthService } from '../../../../services/auth.service';
+import { RetosService, JugadorRanking } from '../../../../services/retos.service';
 
-interface Jugador {
-  posicion: number;
-  nombre: string;
-  xp: number;
-  inicial: string;
-  esUsuario?: boolean;
-}
+type TabRanking = 'diario' | 'semanal';
 
 @Component({
   selector: 'app-ranking',
@@ -16,29 +10,72 @@ interface Jugador {
   templateUrl: './ranking.html',
   styleUrl: './ranking.css',
 })
-export class Ranking {
-  private authService = inject(AuthService);
-  user = computed(() => this.authService.currentUser());
+export class Ranking implements OnInit {
+  private retosService = inject(RetosService);
 
-  liga = 'Plata';
+  tab                 = signal<TabRanking>('diario');
+  jugadoresDiario     = signal<JugadorRanking[]>([]);
+  jugadoresSemanal    = signal<JugadorRanking[]>([]);
+  cargando            = signal(true);
 
-  jugadores: Jugador[] = [
-    { posicion: 1, nombre: 'Chef Marco', xp: 4200, inicial: 'M' },
-    { posicion: 2, nombre: 'Ana García', xp: 3850, inicial: 'A' },
-    { posicion: 3, nombre: 'Luis Torres', xp: 3100, inicial: 'L' },
-    { posicion: 4, nombre: 'Sara Ruiz', xp: 2740, inicial: 'S' },
-    { posicion: 5, nombre: 'Pedro M.', xp: 2300, inicial: 'P' },
-    { posicion: 6, nombre: 'Lucía H.', xp: 1840, inicial: 'L', esUsuario: true },
-    { posicion: 7, nombre: 'Carla V.', xp: 1500, inicial: 'C' },
-    { posicion: 8, nombre: 'Diego R.', xp: 1200, inicial: 'D' },
-    { posicion: 9, nombre: 'Marta C.', xp: 900, inicial: 'M' },
-    { posicion: 10, nombre: 'Tomás B.', xp: 650, inicial: 'T' },
-  ];
+  get jugadores(): JugadorRanking[] {
+    return this.tab() === 'diario' ? this.jugadoresDiario() : this.jugadoresSemanal();
+  }
+
+  get liga(): string {
+    const me = this.jugadores.find(j => j.esUsuario);
+    if (!me) return 'Bronce';
+    if (me.posicion <= 3) return 'Oro';
+    if (me.posicion <= 6) return 'Plata';
+    return 'Bronce';
+  }
+
+  ngOnInit(): void {
+    this.cargarAmbos();
+  }
+
+  cargarAmbos(): void {
+    this.cargando.set(true);
+    let pendientes = 2;
+    const done = () => { if (--pendientes === 0) this.cargando.set(false); };
+
+    this.retosService.getRankingDiario().subscribe({
+      next: (data) => { this.jugadoresDiario.set(data); done(); },
+      error: () => done(),
+    });
+    this.retosService.getRankingSemanal().subscribe({
+      next: (data) => { this.jugadoresSemanal.set(data); done(); },
+      error: () => done(),
+    });
+  }
+
+  cambiarTab(t: TabRanking): void {
+    this.tab.set(t);
+  }
 
   getMedalla(pos: number): string {
     if (pos === 1) return '🥇';
     if (pos === 2) return '🥈';
     if (pos === 3) return '🥉';
     return '';
+  }
+
+  getPremio(pos: number): string {
+    if (pos === 1) return '💎 500';
+    if (pos === 2) return '💎 300';
+    if (pos === 3) return '💎 150';
+    return '';
+  }
+
+  maxXp(): number {
+    return this.jugadores[0]?.xp || 1;
+  }
+
+  posicionUsuario(): number {
+    return this.jugadores.find(j => j.esUsuario)?.posicion ?? 0;
+  }
+
+  diamantesUsuario(): number {
+    return this.jugadores.find(j => j.esUsuario)?.diamantes ?? 0;
   }
 }

@@ -1,71 +1,118 @@
 <div class="ranking-container">
 
   <div class="ranking-header">
-    <h2>Ranking</h2>
-    <div class="liga-badge">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-        <polyline points="6 9 6 2 18 2 18 9"/>
-        <path d="M6 18H4a2 2 0 01-2-2v-1a2 2 0 012-2h16a2 2 0 012 2v1a2 2 0 01-2 2h-2"/>
-        <rect x="6" y="18" width="12" height="4"/>
-      </svg>
-      Liga {{ liga }}
+    <div>
+      <h2>Ranking</h2>
+      <p class="ranking-sub">Gana XP completando retos y sube de posición</p>
+    </div>
+    <div class="header-right">
+      <div class="liga-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+          <polyline points="6 9 6 2 18 2 18 9"/>
+          <path d="M6 18H4a2 2 0 01-2-2v-1a2 2 0 012-2h16a2 2 0 012 2v1a2 2 0 01-2 2h-2"/>
+          <rect x="6" y="18" width="12" height="4"/>
+        </svg>
+        Liga {{ liga }}
+      </div>
+      @if (diamantesUsuario() > 0) {
+        <div class="diamantes-badge">💎 {{ diamantesUsuario() | number }}</div>
+      }
     </div>
   </div>
 
-  <!-- Desktop: list + aside. Mobile: list only -->
-  <div class="ranking-body">
+  <!-- Premio semanal aviso -->
+  @if (tab() === 'semanal') {
+    <div class="premio-aviso">
+      🏆 Al finalizar la semana: <strong>🥇 💎 500 &nbsp;·&nbsp; 🥈 💎 300 &nbsp;·&nbsp; 🥉 💎 150</strong>
+    </div>
+  }
 
-    <div class="ranking-lista">
-      @for (jugador of jugadores; track jugador.posicion) {
-        <div class="jugador-fila" [class.yo]="jugador.esUsuario">
-          <span class="posicion">
-            @if (getMedalla(jugador.posicion)) {
-              {{ getMedalla(jugador.posicion) }}
-            } @else {
-              {{ jugador.posicion }}
-            }
-          </span>
-          <div class="jugador-avatar" [class.yo-avatar]="jugador.esUsuario">
-            {{ jugador.inicial }}
-          </div>
-          <div class="jugador-info">
-            <span class="jugador-nombre">
-              {{ jugador.nombre }}
-              @if (jugador.esUsuario) {
-                <span class="yo-label">(tú)</span>
+  <!-- Tabs -->
+  <div class="tabs-wrapper">
+    <button class="tab-btn" [class.activo]="tab() === 'diario'" (click)="cambiarTab('diario')">
+      📅 Hoy
+    </button>
+    <button class="tab-btn" [class.activo]="tab() === 'semanal'" (click)="cambiarTab('semanal')">
+      📆 Esta semana
+    </button>
+  </div>
+
+  @if (cargando()) {
+    <div class="cargando">Cargando ranking...</div>
+  } @else {
+
+    <div class="ranking-body">
+
+      <div class="ranking-lista">
+        @for (jugador of jugadores; track jugador.posicion) {
+          <div class="jugador-fila" [class.yo]="jugador.esUsuario" [class.top3]="jugador.posicion <= 3">
+            <span class="posicion">
+              @if (getMedalla(jugador.posicion)) {
+                {{ getMedalla(jugador.posicion) }}
+              } @else {
+                {{ jugador.posicion }}
               }
             </span>
-            <span class="jugador-xp">{{ jugador.xp | number }} XP</span>
-          </div>
-          <div class="xp-bar-wrapper">
-            <div class="xp-bar-fill" [style.width.%]="(jugador.xp / 4200) * 100"></div>
-          </div>
-        </div>
-      }
-    </div>
-
-    <!-- Desktop aside -->
-    <div class="ranking-aside">
-      <div class="podium-card">
-        <div class="podium-title">Top 3</div>
-        @for (j of jugadores.slice(0, 3); track j.posicion) {
-          <div class="podium-row">
-            <span class="podium-medal">{{ getMedalla(j.posicion) }}</span>
-            <div class="podium-info">
-              <div class="podium-nombre">{{ j.nombre }}</div>
-              <div class="podium-xp">{{ j.xp | number }} XP</div>
+            <div class="jugador-avatar" [class.yo-avatar]="jugador.esUsuario">
+              {{ jugador.nombre.charAt(0).toUpperCase() }}
+            </div>
+            <div class="jugador-info">
+              <span class="jugador-nombre">
+                {{ jugador.nombre }}
+                @if (jugador.esUsuario) { <span class="yo-label">(tú)</span> }
+              </span>
+              <span class="jugador-xp">{{ jugador.xp | number }} XP</span>
+            </div>
+            <div class="jugador-derecha">
+              <div class="xp-bar-wrapper">
+                <div class="xp-bar-fill" [style.width.%]="(jugador.xp / maxXp()) * 100"></div>
+              </div>
+              @if (getPremio(jugador.posicion)) {
+                <span class="premio-diamantes">{{ getPremio(jugador.posicion) }}</span>
+              }
             </div>
           </div>
         }
+
+        @if (jugadores.length === 0) {
+          <div class="sin-datos">Aún no hay datos para este periodo. ¡Completa un reto para aparecer!</div>
+        }
       </div>
 
-      <div class="liga-card">
-        <span class="liga-card-label">Tu liga</span>
-        <span class="liga-card-name">🥈 {{ liga }}</span>
-        <span class="liga-card-sub">Posición 6 de 10 — ¡sigue adelante!</span>
+      <!-- Desktop aside -->
+      <div class="ranking-aside">
+        <div class="podium-card">
+          <div class="podium-title">Top 3</div>
+          @for (j of jugadores.slice(0, 3); track j.posicion) {
+            <div class="podium-row">
+              <span class="podium-medal">{{ getMedalla(j.posicion) }}</span>
+              <div class="podium-info">
+                <div class="podium-nombre">{{ j.nombre }}</div>
+                <div class="podium-xp">{{ j.xp | number }} XP</div>
+              </div>
+              <div class="podium-premio">{{ getPremio(j.posicion) }}</div>
+            </div>
+          }
+        </div>
+
+        <div class="liga-card">
+          <span class="liga-card-label">Tu liga</span>
+          <span class="liga-card-name">
+            @if (liga === 'Oro') { 🥇 }
+            @else if (liga === 'Plata') { 🥈 }
+            @else { 🥉 }
+            {{ liga }}
+          </span>
+          @if (posicionUsuario() > 0) {
+            <span class="liga-card-sub">Posición {{ posicionUsuario() }} — ¡sigue completando retos!</span>
+          }
+          @if (diamantesUsuario() > 0) {
+            <span class="liga-card-diamantes">💎 {{ diamantesUsuario() | number }} diamantes</span>
+          }
+        </div>
       </div>
+
     </div>
-
-  </div>
+  }
 
 </div>
