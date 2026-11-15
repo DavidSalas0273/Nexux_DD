@@ -67,6 +67,29 @@ import { Component, input } from '@angular/core';
           <svg:path stroke-width="2.8" d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3" />
           <svg:path stroke-width="2.8" d="M4.5 3.8v4.5H9" />
         }
+        @case ('olla') {
+          <svg:path stroke-width="2.2" d="M9 6c0-1.2 1.2-1.2 1.2-2.6M14 6c0-1.2 1.2-1.2 1.2-2.6" />
+          <svg:path stroke-width="2.6" d="M3 9.5h18M2 12.5h2M20 12.5h2" />
+          <svg:path fill="currentColor" stroke="none" d="M4.5 10.5h15V17a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3z" />
+        }
+        @case ('hueso') {
+          <svg:path stroke-width="3.4" d="M8 16l8-8" />
+          <svg:circle fill="currentColor" stroke="none" cx="5.8" cy="15.6" r="2.5" />
+          <svg:circle fill="currentColor" stroke="none" cx="8.4" cy="18.2" r="2.5" />
+          <svg:circle fill="currentColor" stroke="none" cx="15.6" cy="5.8" r="2.5" />
+          <svg:circle fill="currentColor" stroke="none" cx="18.2" cy="8.4" r="2.5" />
+        }
+        @case ('muslo') {
+          <svg:path fill="currentColor" stroke="none" d="M14.8 3a6.2 6.2 0 0 1 4.4 10.6c-1.9 1.9-4.6 2.3-6.8 1.4L10 17.4l-2.2-1.6-1.6-2.2L8.6 11c-.9-2.2-.5-4.9 1.4-6.8A6.2 6.2 0 0 1 14.8 3z" />
+          <svg:path stroke-width="2.6" d="M9.5 14.5L6 18" />
+          <svg:circle fill="currentColor" stroke="none" cx="4.6" cy="17.6" r="1.9" />
+          <svg:circle fill="currentColor" stroke="none" cx="6.4" cy="19.4" r="1.9" />
+        }
+        @case ('tazon') {
+          <svg:path stroke-width="2.2" d="M9.5 7.5c0-1.4 1.4-1.4 1.4-3M13.5 7.5c0-1.4 1.4-1.4 1.4-3" />
+          <svg:path fill="currentColor" stroke="none" d="M3 10.5h18c0 4.5-3.6 8.2-8.1 8.2h-1.8C6.6 18.7 3 15 3 10.5z" />
+          <svg:rect fill="currentColor" stroke="none" x="8" y="19" width="8" height="2.2" rx="1.1" />
+        }
         @case ('diana') {
           <svg:circle stroke-width="2.4" cx="12" cy="12" r="8.5" />
           <svg:circle stroke-width="2.4" cx="12" cy="12" r="4.5" />

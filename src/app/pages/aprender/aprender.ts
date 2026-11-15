@@ -1,4 +1,5 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, inject } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Icono } from './icono';
@@ -17,6 +18,16 @@ export interface Nivel {
   preguntas: Pregunta[];
 }
 
+export interface Unidad {
+  id: number;
+  titulo: string;
+  autor: string;
+  /** Clase de color de la unidad en el CSS: 'verde' | 'morado' */
+  tema: string;
+  video: { tipo: 'archivo' | 'youtube'; src: string };
+  niveles: Nivel[];
+}
+
 @Component({
   selector: 'app-aprender',
   imports: [CommonModule, Icono],
@@ -26,11 +37,19 @@ export interface Nivel {
 export class Aprender {
   private router = Router;
 
-  // Estado del video
-  videoVisible = signal(false);
+  // Estado del video: la unidad cuyo video está abierto
+  videoAbierto = signal<Unidad | null>(null);
+  private sanitizer = inject(DomSanitizer);
 
-  // Niveles y preguntas
-  niveles: Nivel[] = [
+  /** URL del video de YouTube marcada como segura para el iframe. */
+  urlYoutube = computed<SafeResourceUrl | null>(() => {
+    const unidad = this.videoAbierto();
+    if (!unidad || unidad.video.tipo !== 'youtube') return null;
+    return this.sanitizer.bypassSecurityTrustResourceUrl(unidad.video.src);
+  });
+
+  // Unidad 1: Giacomo Bocchio, técnicas culinarias
+  private nivelesUnidad1: Nivel[] = [
     {
       id: 1,
       titulo: 'Mise en Place',
@@ -236,6 +255,246 @@ export class Aprender {
       ],
     },
   ];
+
+  // Unidad 2: Chef Machaen, fondos, caldos y consomés
+  // Los ids siguen la numeración global para que el nivel 5 se desbloquee al terminar el 4.
+  private nivelesUnidad2: Nivel[] = [
+    {
+      id: 5,
+      titulo: 'Fondos y Caldos',
+      icono: 'olla',
+      preguntas: [
+        {
+          id: 17,
+          texto: '¿Qué es un fondo en cocina?',
+          opciones: [
+            'Una sopa lista para servir con fideos',
+            'Un líquido aromático de huesos, verduras y hierbas que sirve de base para otras preparaciones',
+            'Una salsa espesa de harina y mantequilla',
+            'El jugo que suelta la carne al asarse',
+          ],
+          correcta: 1,
+        },
+        {
+          id: 18,
+          texto: '¿Cuál es la diferencia principal entre un fondo y un caldo?',
+          opciones: [
+            'El caldo se sazona y se puede tomar solo; el fondo es una base sin sazonar',
+            'El fondo lleva más agua que el caldo',
+            'El caldo solo se hace con verduras',
+            'No hay ninguna diferencia',
+          ],
+          correcta: 0,
+        },
+        {
+          id: 19,
+          texto: '¿Por qué un fondo se cocina a fuego bajo, sin hervir fuerte?',
+          opciones: [
+            'Para que se cocine más rápido',
+            'Para que no se pegue la olla',
+            'Para que quede limpio y no se enturbie',
+            'Para que pierda el sabor de los huesos',
+          ],
+          correcta: 2,
+        },
+        {
+          id: 20,
+          texto: '¿Qué se hace con la espuma y las impurezas que suben durante la cocción?',
+          opciones: [
+            'Se mezclan con el líquido para dar sabor',
+            'Se retiran con un cucharón',
+            'Se dejan hasta el final y se cuelan',
+            'Se les agrega sal para disolverlas',
+          ],
+          correcta: 1,
+        },
+      ],
+    },
+    {
+      id: 6,
+      titulo: 'Fondo Oscuro',
+      icono: 'hueso',
+      preguntas: [
+        {
+          id: 21,
+          texto: '¿Qué huesos lleva la receta de fondo oscuro del video?',
+          opciones: [
+            'Huesos de pollo',
+            'Espinazos de pescado',
+            'Huesos de res',
+            'No lleva huesos',
+          ],
+          correcta: 2,
+        },
+        {
+          id: 22,
+          texto: '¿Qué se hace con los huesos para que el fondo quede oscuro?',
+          opciones: [
+            'Se tuestan hasta dorarlos antes de cocerlos en agua',
+            'Se hierven primero y se tira esa agua',
+            'Se les agrega salsa de soya',
+            'Se cocinan congelados',
+          ],
+          correcta: 0,
+        },
+        {
+          id: 23,
+          texto: '¿Cuánto tiempo total toma preparar el fondo oscuro?',
+          opciones: [
+            '50 minutos',
+            '2 horas',
+            '7 horas',
+            '24 horas',
+          ],
+          correcta: 2,
+        },
+        {
+          id: 24,
+          texto: '¿Para qué se usa el hilo de atar en esta receta?',
+          opciones: [
+            'Para atar los huesos y que no se deshagan',
+            'Para amarrar las hierbas aromáticas y sacarlas fácil al final',
+            'Para colgar la olla',
+            'Para medir el nivel del agua',
+          ],
+          correcta: 1,
+        },
+      ],
+    },
+    {
+      id: 7,
+      titulo: 'Fondo Claro',
+      icono: 'muslo',
+      preguntas: [
+        {
+          id: 25,
+          texto: '¿Con qué huesos se prepara el fondo claro del video?',
+          opciones: [
+            'Huesos de pollo',
+            'Huesos de res tostados',
+            'Huesos de cerdo',
+            'Solo con verduras',
+          ],
+          correcta: 0,
+        },
+        {
+          id: 26,
+          texto: '¿Por qué se le llama fondo «claro»?',
+          opciones: [
+            'Porque lleva leche',
+            'Porque se cuela con un paño blanco',
+            'Porque los huesos no se tuestan antes de cocinarse',
+            'Porque se prepara de día',
+          ],
+          correcta: 2,
+        },
+        {
+          id: 27,
+          texto: '¿Qué verduras forman la base aromática del fondo claro?',
+          opciones: [
+            'Papa, tomate y ajo',
+            'Cebolla, zanahoria y apio',
+            'Pimiento, calabaza y elote',
+            'Solo cebolla',
+          ],
+          correcta: 1,
+        },
+        {
+          id: 28,
+          texto: '¿Cuántos litros rinde la receta de fondo claro?',
+          opciones: [
+            '1 litro',
+            '2 litros',
+            '4 litros',
+            '10 litros',
+          ],
+          correcta: 2,
+        },
+      ],
+    },
+    {
+      id: 8,
+      titulo: 'Consomé',
+      icono: 'tazon',
+      preguntas: [
+        {
+          id: 29,
+          texto: '¿De qué se parte para preparar el consomé de pollo?',
+          opciones: [
+            'De agua con cubos de caldo',
+            'Del fondo de pollo preparado antes en el video',
+            'Del fondo oscuro de res',
+            'De leche y crema',
+          ],
+          correcta: 1,
+        },
+        {
+          id: 30,
+          texto: '¿Qué ingredientes se usan para clarificar el consomé?',
+          opciones: [
+            'Harina y mantequilla',
+            'Yemas de huevo y crema',
+            'Claras de huevo y carne molida de res',
+            'Gelatina y azúcar',
+          ],
+          correcta: 2,
+        },
+        {
+          id: 31,
+          texto: 'Si empiezas con 2 litros de fondo, ¿cuánto consomé obtienes?',
+          opciones: [
+            '1 litro',
+            '2 litros',
+            '3 litros',
+            '500 mililitros',
+          ],
+          correcta: 0,
+        },
+        {
+          id: 32,
+          texto: '¿Qué distingue a un consomé de un caldo común?',
+          opciones: [
+            'Que se sirve frío',
+            'Que es espeso como una crema',
+            'Que lleva fideos',
+            'Que está clarificado: es transparente y de sabor concentrado',
+          ],
+          correcta: 3,
+        },
+      ],
+    },
+  ];
+
+  unidades: Unidad[] = [
+    {
+      id: 1,
+      titulo: 'Técnicas culinarias esenciales',
+      autor: 'Giacomo Bocchio',
+      tema: 'verde',
+      video: {
+        tipo: 'archivo',
+        src: '/TE VOY A ENSEÑAR 7 TÉCNICAS CULINARIAS QUE TODO COCINERO DEBE SABER _ GIACOMO BOCCHIO.mp4',
+      },
+      niveles: this.nivelesUnidad1,
+    },
+    {
+      id: 2,
+      titulo: 'Fondos, caldos y consomés',
+      autor: 'Chef Machaen',
+      tema: 'morado',
+      video: { tipo: 'youtube', src: 'https://www.youtube-nocookie.com/embed/zLw5w2OJvlo' },
+      niveles: this.nivelesUnidad2,
+    },
+  ];
+
+  /** Todos los niveles en orden; el id de cada nivel coincide con su posición + 1. */
+  niveles: Nivel[] = this.unidades.flatMap(u => u.niveles);
+
+  /** Una unidad está bloqueada hasta completar el último nivel de la anterior. */
+  unidadBloqueada(unidad: Unidad): boolean {
+    const primero = unidad.niveles[0].id;
+    return primero > 1 && !this.estaCompletado(primero - 1);
+  }
 
   // Estado del quiz
   nivelActivo = signal<number | null>(null);
