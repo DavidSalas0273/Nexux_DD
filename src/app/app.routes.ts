@@ -21,6 +21,22 @@ export const routes: Routes = [
         path: 'aprender',
         loadComponent: () => import('./pages/aprender/aprender').then((m) => m.Aprender),
       },
+      {
+        path: 'retos',
+        loadComponent: () => import('./pages/dashboard/tabs/retos/retos').then((m) => m.Retos),
+      },
+      {
+        path: 'ranking',
+        loadComponent: () => import('./pages/dashboard/tabs/ranking/ranking').then((m) => m.Ranking),
+      },
+      {
+        path: 'perfil',
+        loadComponent: () => import('./pages/dashboard/tabs/perfil/perfil').then((m) => m.Perfil),
+      },
+      {
+        path: 'quiz/:id',
+        loadComponent: () => import('./pages/dashboard/tabs/quiz/quiz').then((m) => m.Quiz),
+      },
     ],
   },
   { path: '**', redirectTo: '/login' },
