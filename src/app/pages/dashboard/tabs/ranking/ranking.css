@@ -27,6 +27,39 @@
   font-weight: 700;
 }
 
+/* Tabs */
+.tabs-wrapper {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.85rem 1.25rem 0;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 0.55rem 0.5rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab-btn.activo {
+  background: #2e7d32;
+  color: #fff;
+  border-color: #2e7d32;
+}
+
+.cargando, .sin-datos {
+  padding: 2rem;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
 .ranking-lista {
   padding: 0.75rem 1.25rem;
   display: flex;
