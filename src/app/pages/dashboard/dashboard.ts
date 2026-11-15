@@ -29,10 +29,6 @@ export class Dashboard {
 
   inicial = computed(() => (this.user()?.nombre?.trim()[0] ?? '?').toUpperCase());
 
-  // Stats fijos por ahora (se conectarán al backend más adelante)
-  readonly racha = 12;
-  readonly gemas = 340;
-  readonly vidas = 5;
 
   logout() {
     this.authService.logout();

@@ -1,0 +1,213 @@
+<div class="juego" [class]="'juego-' + reto().juego" role="dialog" aria-modal="true" [attr.aria-label]="reto().titulo">
+
+  @if (!terminado()) {
+    <!-- ═══ CABECERA: salir, progreso y tiempo ═══ -->
+    <div class="cabecera">
+      <button class="btn-salir" type="button" aria-label="Salir del reto" (click)="salir()">
+        <app-icono nombre="cerrar" [tamano]="22" />
+      </button>
+      <div class="barra">
+        <div class="barra-fill" [style.width.%]="progreso()"></div>
+      </div>
+      <span class="cabecera-titulo">{{ reto().titulo }}</span>
+    </div>
+
+    <!-- ═══ QUIZ RELÁMPAGO Y VERDADERO/FALSO ═══ -->
+    @if ((modo() === 'quiz' || modo() === 'vf') && preguntaActual(); as pregunta) {
+      <main class="cuerpo">
+        @if (segundos() > 0) {
+          <!-- se vuelve a crear en cada pregunta para reiniciar la animación -->
+          @for (i of [indice()]; track i) {
+            <div class="tiempo" [class.parado]="elegida() !== null">
+              <app-icono nombre="reloj" [tamano]="18" />
+              <div class="tiempo-barra">
+                <div class="tiempo-fill" [style.animation-duration.s]="segundos()"></div>
+              </div>
+            </div>
+          }
+        }
+
+        <p class="consigna">{{ modo() === 'vf' ? '¿Verdadero o falso?' : 'Elige la respuesta correcta' }}</p>
+
+        @if (modo() === 'vf') {
+          @for (i of [indice()]; track i) {
+            <div class="frase-card">{{ pregunta.texto }}</div>
+          }
+          <div class="vf-botones">
+            @for (opcion of pregunta.opciones; track $index) {
+              <button
+                type="button"
+                class="vf-btn"
+                [class.vf-falso]="$index === 0"
+                [class.vf-verdadero]="$index === 1"
+                [class]="estadoOpcion($index)"
+                [disabled]="elegida() !== null"
+                (click)="responder($index)"
+              >
+                <app-icono [nombre]="$index === 0 ? 'cerrar' : 'check'" [tamano]="26" />
+                {{ opcion }}
+              </button>
+            }
+          </div>
+        } @else {
+          @for (i of [indice()]; track i) {
+            <h2 class="pregunta">{{ pregunta.texto }}</h2>
+          }
+          <div class="opciones">
+            @for (opcion of pregunta.opciones; track $index) {
+              <button
+                type="button"
+                class="opcion"
+                [class]="estadoOpcion($index)"
+                [disabled]="elegida() !== null"
+                (click)="responder($index)"
+              >
+                <span class="opcion-letra">{{ $index + 1 }}</span>
+                {{ opcion }}
+              </button>
+            }
+          </div>
+        }
+
+        @if (elegida() === -1) {
+          <p class="aviso-tiempo">Se acabó el tiempo</p>
+        }
+      </main>
+    }
+
+    <!-- ═══ EMPAREJA CONCEPTOS ═══ -->
+    @if (modo() === 'parejas') {
+      <main class="cuerpo">
+        <p class="consigna">Toca un concepto y luego su significado</p>
+        <div class="parejas">
+          <div class="columna">
+            @for (p of columnaIzq(); track p.id) {
+              <button
+                type="button"
+                class="ficha"
+                [class]="estadoParejaIzq(p.id)"
+                [disabled]="emparejadas().includes(p.id)"
+                (click)="elegirIzq(p.id)"
+              >{{ p.termino }}</button>
+            }
+          </div>
+          <div class="columna">
+            @for (p of columnaDer(); track p.id) {
+              <button
+                type="button"
+                class="ficha ficha-def"
+                [class]="estadoParejaDer(p.id)"
+                [disabled]="emparejadas().includes(p.id)"
+                (click)="elegirDer(p.id)"
+              >{{ p.definicion }}</button>
+            }
+          </div>
+        </div>
+      </main>
+    }
+
+    <!-- ═══ ORDENA LA RECETA ═══ -->
+    @if (modo() === 'ordenar' && procedimiento(); as receta) {
+      <main class="cuerpo">
+        <p class="consigna">Ordena los pasos</p>
+        <h2 class="pregunta">{{ receta.titulo }}</h2>
+
+        <ol class="orden-elegidos" [class.vacio]="elegidos().length === 0">
+          @for (paso of elegidos(); track paso; let pos = $index) {
+            <li>
+              <button
+                type="button"
+                class="paso"
+                [class.correcta]="comprobado() && paso === pos"
+                [class.incorrecta]="comprobado() && paso !== pos"
+                (click)="devolverPaso(paso)"
+              >
+                <span class="paso-num">{{ pos + 1 }}</span>
+                {{ receta.pasos[paso] }}
+              </button>
+            </li>
+          } @empty {
+            <li class="orden-vacio">Toca los pasos de abajo en el orden correcto</li>
+          }
+        </ol>
+
+        <div class="orden-banco">
+          @for (paso of banco(); track paso) {
+            <button type="button" class="paso paso-banco" (click)="tomarPaso(paso)">
+              {{ receta.pasos[paso] }}
+            </button>
+          }
+        </div>
+      </main>
+
+      <footer class="pie" [class.pie-ok]="comprobado() && aciertosRonda() === receta.pasos.length" [class.pie-err]="comprobado() && aciertosRonda() < receta.pasos.length">
+        <div class="pie-inner">
+          @if (comprobado()) {
+            <div class="pie-mensaje">
+              <strong>{{ aciertosRonda() === receta.pasos.length ? '¡Orden perfecto!' : aciertosRonda() + ' de ' + receta.pasos.length + ' en su lugar' }}</strong>
+            </div>
+            <button class="btn" [class.btn-error]="aciertosRonda() < receta.pasos.length" type="button" (click)="siguienteRonda()">Continuar</button>
+          } @else {
+            <span class="pie-pista">{{ elegidos().length }}/{{ receta.pasos.length }} pasos</span>
+            <button class="btn" type="button" [disabled]="banco().length > 0" (click)="comprobarOrden()">Comprobar</button>
+          }
+        </div>
+      </footer>
+    }
+
+  } @else {
+
+    <!-- ═══ RESULTADO ═══ -->
+    <main class="final">
+      <div class="final-icono" [class.ok]="aprobado()">
+        <app-icono [nombre]="aprobado() ? 'trofeo' : 'reintentar'" [tamano]="64" />
+      </div>
+      <h2>{{ aprobado() ? '¡Reto superado!' : 'Casi lo logras' }}</h2>
+      <p class="final-sub">
+        @if (aprobado()) {
+          {{ reto().titulo }}
+        } @else {
+          Necesitas al menos 60% de aciertos para ganar el XP
+        }
+      </p>
+
+      <div class="stats">
+        <div class="stat stat-verde">
+          <span class="stat-titulo">Aciertos</span>
+          <span class="stat-valor">{{ aciertos() }}/{{ total() }}</span>
+        </div>
+        <div class="stat stat-oro">
+          <span class="stat-titulo">XP</span>
+          <span class="stat-valor">
+            @switch (estadoXp()) {
+              @case ('ganado') { +{{ xpGanado() }} }
+              @case ('guardando') { ... }
+              @default { 0 }
+            }
+          </span>
+        </div>
+      </div>
+
+      @switch (estadoXp()) {
+        @case ('practica') {
+          <p class="final-nota">Ya completaste este reto en este periodo. Esta partida fue de práctica.</p>
+        }
+        @case ('error') {
+          <p class="final-nota final-error">{{ mensajeError() }}</p>
+        }
+      }
+    </main>
+
+    <footer class="pie">
+      <div class="pie-inner">
+        @if (aprobado()) {
+          <button class="btn btn-secundario" type="button" (click)="iniciar()">Jugar de nuevo</button>
+          <button class="btn" type="button" [disabled]="estadoXp() === 'guardando'" (click)="salir()">Continuar</button>
+        } @else {
+          <button class="btn btn-secundario" type="button" (click)="salir()">Salir</button>
+          <button class="btn" type="button" (click)="iniciar()">Reintentar</button>
+        }
+      </div>
+    </footer>
+  }
+</div>

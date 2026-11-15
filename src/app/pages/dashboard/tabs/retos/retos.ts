@@ -1,83 +1,61 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RetosService, Reto } from '../../../../services/retos.service';
+import { Icono } from '../../../aprender/icono';
+import { Juego } from './juego/juego';
+import { CONFIG_JUEGOS } from './juegos.data';
 
 @Component({
   selector: 'app-retos',
-  imports: [CommonModule],
+  imports: [Icono, Juego],
   templateUrl: './retos.html',
   styleUrl: './retos.css',
 })
 export class Retos implements OnInit {
   private retosService = inject(RetosService);
 
-  retosHoy    = signal<Reto[]>([]);
+  retosHoy = signal<Reto[]>([]);
   retosSemana = signal<Reto[]>([]);
-  xpTotal     = signal<number>(0);
-  diamantes   = signal<number>(0);
-  cargando    = signal(true);
-  mensajeXP   = signal<string | null>(null);
-  completando = signal<number | null>(null);
+  xpTotal = signal(0);
+  cargando = signal(true);
+  error = signal(false);
+
+  /** Reto que se está jugando (abre el minijuego a pantalla completa). */
+  jugando = signal<Reto | null>(null);
+
+  hechosHoy = computed(() => this.retosHoy().filter((r) => r.completado).length);
+  hechosSemana = computed(() => this.retosSemana().filter((r) => r.completado).length);
 
   ngOnInit(): void {
     this.cargarRetos();
-    this.cargarDiamantes();
   }
 
   cargarRetos(): void {
-    this.cargando.set(true);
+    this.error.set(false);
     this.retosService.getRetos().subscribe({
       next: (data) => {
-        this.retosHoy.set(data.diarios);
-        this.retosSemana.set(data.semanales);
+        // Solo se muestran los retos que tienen un juego asignado
+        this.retosHoy.set(data.diarios.filter((r) => r.juego));
+        this.retosSemana.set(data.semanales.filter((r) => r.juego));
+        this.xpTotal.set(data.xpTotal ?? 0);
         this.cargando.set(false);
       },
-      error: () => this.cargando.set(false),
-    });
-  }
-
-  cargarDiamantes(): void {
-    this.retosService.getMisDiamantes().subscribe({
-      next: (res) => this.diamantes.set(res.diamantes),
-      error: () => {},
-    });
-  }
-
-  completar(reto: Reto): void {
-    if (reto.completado || this.completando() !== null) return;
-    this.completando.set(reto.id);
-
-    this.retosService.completarReto(reto.id).subscribe({
-      next: (res) => {
-        this.xpTotal.set(res.xpTotal);
-        this.mostrarMensaje(`+${res.xpGanado} XP ganados 🎉`);
-        this.cargarRetos();
-        this.completando.set(null);
-      },
-      error: (err) => {
-        this.mostrarMensaje(err.error?.error ?? 'Error al completar el reto');
-        this.completando.set(null);
+      error: () => {
+        this.cargando.set(false);
+        this.error.set(true);
       },
     });
   }
 
-  private mostrarMensaje(texto: string): void {
-    this.mensajeXP.set(texto);
-    setTimeout(() => this.mensajeXP.set(null), 3000);
+  jugar(reto: Reto): void {
+    this.jugando.set(reto);
   }
 
-  xpDiarioCompletado():  number { return this.retosHoy().filter(r => r.completado).reduce((s, r) => s + r.xp, 0); }
-  xpDiarioTotal():       number { return this.retosHoy().reduce((s, r) => s + r.xp, 0); }
-  xpSemanalCompletado(): number { return this.retosSemana().filter(r => r.completado).reduce((s, r) => s + r.xp, 0); }
-  xpSemanalTotal():      number { return this.retosSemana().reduce((s, r) => s + r.xp, 0); }
+  cerrarJuego(huboCambio: boolean): void {
+    this.jugando.set(null);
+    if (huboCambio) this.cargarRetos();
+  }
 
-  etiquetaCategoria(cat: string): string {
-    const map: Record<string, string> = {
-      fundamentos: '🔪 Fundamentos',
-      salsas:      '🍲 Salsas madre',
-      proteinas:   '🥩 Proteínas',
-      general:     '',
-    };
-    return map[cat] ?? '';
+  resumen(reto: Reto): string {
+    return reto.juego ? CONFIG_JUEGOS[reto.juego].resumen : '';
   }
 }

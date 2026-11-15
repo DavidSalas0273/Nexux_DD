@@ -1,111 +1,76 @@
-<div class="retos-container">
-  <div class="retos-header">
-    <div>
-      <h2>Retos</h2>
-      <p>Completa retos para ganar XP y subir en el ranking</p>
-    </div>
-    <div class="header-badges">
-      @if (xpTotal() > 0) {
-        <div class="badge-xp">⭐ {{ xpTotal() | number }} XP</div>
-      }
-      <div class="badge-diamantes">💎 {{ diamantes() | number }}</div>
-    </div>
-  </div>
+<div class="retos">
 
-  @if (mensajeXP()) {
-    <div class="toast-xp">{{ mensajeXP() }}</div>
-  }
+  <header class="retos-header">
+    <div>
+      <h1>Retos</h1>
+      <p>Juegos rápidos con lo que aprendiste en las clases</p>
+    </div>
+    <span class="xp-chip" title="XP acumulado">
+      <app-icono nombre="estrella" [tamano]="20" />
+      {{ xpTotal() }} XP
+    </span>
+  </header>
 
   @if (cargando()) {
-    <div class="cargando">Cargando retos...</div>
+    <div class="esqueleto">
+      @for (i of [0, 1, 2]; track i) {
+        <div class="esqueleto-card"></div>
+      }
+    </div>
+  } @else if (error()) {
+    <div class="vacio">
+      <p>No se pudieron cargar los retos. Revisa que el servidor esté encendido.</p>
+      <button class="btn" type="button" (click)="cargarRetos()">Reintentar</button>
+    </div>
   } @else {
 
-    <div class="retos-body">
-
-      <!-- RETOS DIARIOS -->
-      <section class="retos-seccion">
-        <div class="seccion-header">
-          <h3 class="seccion-label">
-            <span class="dot diario"></span>
-            Retos de hoy
-          </h3>
-          <span class="progreso-texto">{{ xpDiarioCompletado() }}/{{ xpDiarioTotal() }} XP</span>
-        </div>
-        <div class="progreso-bar-wrapper">
-          <div class="progreso-bar-fill diario"
-               [style.width.%]="xpDiarioTotal() ? (xpDiarioCompletado() / xpDiarioTotal()) * 100 : 0">
+    @for (seccion of [
+      { titulo: 'Retos de hoy', nota: 'Se renuevan cada día', retos: retosHoy(), hechos: hechosHoy() },
+      { titulo: 'Retos de la semana', nota: 'Se renuevan cada lunes', retos: retosSemana(), hechos: hechosSemana() }
+    ]; track seccion.titulo) {
+      <section class="seccion">
+        <div class="seccion-cabecera">
+          <div>
+            <h2>{{ seccion.titulo }}</h2>
+            <span class="seccion-nota">{{ seccion.nota }}</span>
           </div>
+          <span class="seccion-cuenta">{{ seccion.hechos }} de {{ seccion.retos.length }}</span>
         </div>
-        <div class="retos-lista">
-          @for (reto of retosHoy(); track reto.id) {
-            <div class="reto-card" [class.completado]="reto.completado">
-              <div class="reto-icono">{{ reto.icono }}</div>
+        <div class="seccion-barra">
+          <div class="seccion-fill" [style.width.%]="seccion.retos.length ? (seccion.hechos / seccion.retos.length) * 100 : 0"></div>
+        </div>
+
+        <div class="lista">
+          @for (reto of seccion.retos; track reto.id; let i = $index) {
+            <article class="reto" [class.completado]="reto.completado" [class]="'juego-' + reto.juego" [style.--orden]="i">
+              <span class="reto-icono">
+                <app-icono [nombre]="reto.completado ? 'check' : reto.icono" [tamano]="30" />
+              </span>
+
               <div class="reto-info">
-                <span class="reto-titulo">{{ reto.titulo }}</span>
-                <span class="reto-desc">{{ reto.descripcion }}</span>
-                @if (etiquetaCategoria(reto.categoria)) {
-                  <span class="reto-categoria">{{ etiquetaCategoria(reto.categoria) }}</span>
-                }
+                <h3>{{ reto.titulo }}</h3>
+                <p>{{ reto.descripcion }}</p>
+                <div class="reto-meta">
+                  <span class="meta-xp">+{{ reto.xp }} XP</span>
+                  <span class="meta-detalle">{{ resumen(reto) }}</span>
+                </div>
               </div>
-              <div class="reto-accion">
-                @if (reto.completado) {
-                  <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="3" width="22" height="22">
-                    <polyline points="20 6 9 17 4 12"/>
-                  </svg>
-                } @else {
-                  <button class="btn-completar" [disabled]="completando() === reto.id" (click)="completar(reto)">
-                    @if (completando() === reto.id) { ⏳ }
-                    @else { <span class="xp-badge">+{{ reto.xp }} XP</span> }
-                  </button>
-                }
-              </div>
-            </div>
+
+              @if (reto.completado) {
+                <button class="btn btn-secundario btn-chico" type="button" (click)="jugar(reto)">Repetir</button>
+              } @else {
+                <button class="btn btn-chico" type="button" (click)="jugar(reto)">Jugar</button>
+              }
+            </article>
+          } @empty {
+            <p class="vacio-seccion">No hay retos disponibles por ahora.</p>
           }
         </div>
       </section>
-
-      <!-- RETOS SEMANALES -->
-      <section class="retos-seccion">
-        <div class="seccion-header">
-          <h3 class="seccion-label">
-            <span class="dot semanal"></span>
-            Retos de la semana
-          </h3>
-          <span class="progreso-texto">{{ xpSemanalCompletado() }}/{{ xpSemanalTotal() }} XP</span>
-        </div>
-        <div class="progreso-bar-wrapper">
-          <div class="progreso-bar-fill semanal"
-               [style.width.%]="xpSemanalTotal() ? (xpSemanalCompletado() / xpSemanalTotal()) * 100 : 0">
-          </div>
-        </div>
-        <div class="retos-lista">
-          @for (reto of retosSemana(); track reto.id) {
-            <div class="reto-card" [class.completado]="reto.completado">
-              <div class="reto-icono">{{ reto.icono }}</div>
-              <div class="reto-info">
-                <span class="reto-titulo">{{ reto.titulo }}</span>
-                <span class="reto-desc">{{ reto.descripcion }}</span>
-                @if (etiquetaCategoria(reto.categoria)) {
-                  <span class="reto-categoria">{{ etiquetaCategoria(reto.categoria) }}</span>
-                }
-              </div>
-              <div class="reto-accion">
-                @if (reto.completado) {
-                  <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="3" width="22" height="22">
-                    <polyline points="20 6 9 17 4 12"/>
-                  </svg>
-                } @else {
-                  <button class="btn-completar" [disabled]="completando() === reto.id" (click)="completar(reto)">
-                    @if (completando() === reto.id) { ⏳ }
-                    @else { <span class="xp-badge semanal">+{{ reto.xp }} XP</span> }
-                  </button>
-                }
-              </div>
-            </div>
-          }
-        </div>
-      </section>
-
-    </div>
+    }
   }
 </div>
+
+@if (jugando(); as reto) {
+  <app-juego [reto]="reto" (cerrar)="cerrarJuego($event)" />
+}
