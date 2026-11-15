@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Iniciar sesión</title>
+<style>
+:root{--bg:#F4B735;--green:#247C58;--ink:#173F2E;--card:#FFFBF0;--line:#E3D8B8;--muted:#5E6B5F;--err:#B3261E;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1B2A22;--card:#22362C;--ink:#F6EFD8;--line:#3A5446;--muted:#A9B8AC;--err:#FF8A80}}
+:root[data-theme="dark"]{--bg:#1B2A22;--card:#22362C;--ink:#F6EFD8;--line:#3A5446;--muted:#A9B8AC;--err:#FF8A80}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:"Nunito","Trebuchet MS",system-ui,sans-serif;display:grid;place-items:center;padding:24px}
+.wrap{width:100%;max-width:380px;text-align:center}
+svg.logo{width:132px;height:132px;overflow:visible;cursor:pointer}
+.tile{fill:var(--green);transform-origin:center;transform-box:fill-box;animation:pop .7s cubic-bezier(.3,1.5,.5,1) both}
+.bowl{fill:#fff;transform-box:fill-box;transform-origin:50% 0;animation:bowl .7s .35s cubic-bezier(.3,1.4,.5,1) both}
+.rim{fill:#F4B735;transform-box:fill-box;transform-origin:center;animation:rim .5s .25s ease-out both}
+.leaf{transform-box:fill-box;transform-origin:50% 100%;opacity:0}
+.l1{fill:#F4B735;animation:grow .8s 1s cubic-bezier(.3,1.5,.5,1) forwards, sway 4s 2s ease-in-out infinite}
+.l2{fill:#fff;animation:grow .8s 1.25s cubic-bezier(.3,1.5,.5,1) forwards, sway 4s 2.4s ease-in-out infinite reverse}
+svg.logo:hover .tile{animation:wiggle .6s ease}
+@keyframes pop{from{transform:scale(.3) rotate(-12deg);opacity:0}to{transform:none;opacity:1}}
+@keyframes bowl{from{transform:translateY(-30px) scaleY(.2);opacity:0}to{transform:none;opacity:1}}
+@keyframes rim{from{transform:scaleX(0);opacity:0}to{transform:none;opacity:1}}
+@keyframes grow{from{transform:scale(0) rotate(-25deg);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(4deg)}}
+@keyframes wiggle{0%,100%{transform:none}30%{transform:rotate(-6deg) scale(1.05)}60%{transform:rotate(5deg) scale(1.05)}}
+h1{font-size:1.9rem;margin:22px 0 4px;font-weight:800;animation:fade .6s 1.5s both}
+p.sub{margin:0 0 22px;color:var(--ink);opacity:.8;animation:fade .6s 1.6s both}
+form{background:var(--card);border-radius:24px;padding:24px;text-align:left;box-shadow:0 12px 0 -4px rgba(23,63,46,.18);animation:fade .6s 1.7s both}
+label{display:block;font-weight:700;font-size:.9rem;margin-bottom:6px}
+.field{position:relative;margin-bottom:16px}
+input{width:100%;padding:13px 14px;font:inherit;color:var(--ink);background:transparent;border:2px solid var(--line);border-radius:14px;outline:none;transition:border-color .2s,box-shadow .2s}
+input:focus{border-color:var(--green);box-shadow:0 0 0 4px rgba(36,124,88,.2)}
+.field.bad input{border-color:var(--err)}
+.msg{color:var(--err);font-size:.82rem;min-height:1em;margin-top:4px}
+.eye{position:absolute;right:8px;top:34px;background:none;border:0;cursor:pointer;color:var(--muted);font:inherit;font-size:.8rem;font-weight:700;padding:6px}
+button.go{width:100%;padding:14px;border:0;border-radius:14px;background:var(--green);color:#fff;font:inherit;font-weight:800;font-size:1rem;cursor:pointer;transition:transform .15s,filter .2s;position:relative}
+button.go:hover{filter:brightness(1.1)}button.go:active{transform:scale(.97)}
+button.go:focus-visible,.eye:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+button.go.load{pointer-events:none;color:transparent}
+button.go.load::after{content:"";position:absolute;inset:0;margin:auto;width:20px;height:20px;border:3px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite}
+form.shake{animation:shake .45s}
+.foot{margin-top:14px;font-size:.88rem;text-align:center}
+.foot a{color:var(--green);font-weight:700}
+.ok{display:none;padding:30px 10px;font-weight:800;font-size:1.2rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+@keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-delay:0s!important;animation-iteration-count:1!important}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <svg class="logo" id="logo" viewBox="0 0 210 210" role="img" aria-label="Logo: bowl con hojas">
+    <rect class="tile" x="0" y="0" width="210" height="210" rx="58"/>
+    <path class="bowl" d="M40 115h130a65 65 0 0 1-130 0z"/>
+    <rect class="rim" x="31" y="97" width="148" height="20" rx="10"/>
+    <path class="leaf l1" d="M80 94C70 68 78 46 96 40c12 14 12 36-2 54z"/>
+    <path class="leaf l2" d="M104 94c-6-26 4-44 24-48 6 20-4 38-24 48z"/>
+  </svg>
+  
