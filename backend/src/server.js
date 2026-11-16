@@ -18,6 +18,7 @@ const retosRoutes    = require('./routes/retosRoutes');
 const { ensureProgressTable } = require('./queries/progressQueries');
 const { ensureXpTable } = require('./queries/xpQueries');
 const { ensureRetosJuegos } = require('./queries/retosQueries');
+const { ensureProfileColumns } = require('./queries/userQueries');
 
 const app = express();
 
@@ -27,6 +28,7 @@ pool.query('SELECT 1')
   .then(() => ensureProgressTable())
   .then(() => ensureXpTable())
   .then(() => ensureRetosJuegos())
+  .then(() => ensureProfileColumns())
   .catch((err) => console.error('❌ Error al conectar a PostgreSQL:', err.message));
 
 // Middlewares
@@ -51,7 +53,12 @@ app.get('/api/health', (req, res) => {
 // Manejo de errores
 app.use((err, req, res, next) => {
   console.error(err);
-  res.status(500).json({ error: err.message || 'Error interno del servidor' });
+  // Errores de subida de archivos (tipo o tamaño no válido) son errores del cliente
+  if (err.name === 'MulterError') {
+    const mensaje = err.code === 'LIMIT_FILE_SIZE' ? 'La imagen no puede pesar más de 5 MB' : err.message;
+    return res.status(400).json({ error: mensaje });
+  }
+  res.status(err.status || 500).json({ error: err.message || 'Error interno del servidor' });
 });
 
 const PORT = process.env.PORT || 3000;

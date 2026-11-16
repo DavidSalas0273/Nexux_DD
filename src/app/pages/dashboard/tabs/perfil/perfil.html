@@ -1,92 +1,298 @@
-<div class="perfil-container">
-
-  <!-- Header verde con avatar -->
-  <div class="perfil-header">
-    <div class="avatar-wrapper">
-      @if (fotoUrl) {
-        <img [src]="fotoUrl" alt="Foto de perfil" class="avatar-img" />
-      } @else {
-        <div class="avatar-placeholder">{{ inicial }}</div>
-      }
+@if (cargando()) {
+  <div class="perfil">
+    <div class="esqueleto esqueleto-cabecera"></div>
+    <div class="esqueleto-grid">
+      @for (i of [0, 1, 2, 3]; track i) { <div class="esqueleto"></div> }
     </div>
-
-    <div class="perfil-header-info">
-      <h2 class="perfil-nombre">{{ user()?.nombre }}</h2>
-      <p class="perfil-meta">{{ nombreUsuario }} · Se unió en 2026</p>
-      <div class="nivel-badge">Nivel: Cocinero/a casero/a</div>
-    </div>
-
-    <button class="btn-logout" (click)="logout()">Cerrar sesión</button>
   </div>
+} @else if (error() || !usuario()) {
+  <div class="perfil vacio">
+    <p>No se pudo cargar tu perfil. Revisa que el servidor esté encendido.</p>
+    <button class="btn" type="button" (click)="cargar()">Reintentar</button>
+  </div>
+} @else {
+  @let u = usuario()!;
 
-  <!-- Left: Estadísticas -->
-  <div class="perfil-left">
-    <section class="seccion" style="padding: 0 0 1.25rem;">
-      <h3 class="seccion-titulo">Estadísticas</h3>
-      <div class="stats-grid">
-        @for (stat of estadisticas; track stat.etiqueta) {
-          <div class="stat-card">
-            @if (stat.icono === 'streak') {
-              <svg class="stat-icon orange" viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
-                <path d="M13.5 0.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5 0.67z"/>
-              </svg>
-            } @else if (stat.icono === 'star') {
-              <svg class="stat-icon gold" viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
-                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-              </svg>
-            } @else if (stat.icono === 'trophy') {
-              <svg class="stat-icon gray" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
-                <polyline points="6 9 6 2 18 2 18 9"/>
-                <path d="M6 18H4a2 2 0 01-2-2v-1a2 2 0 012-2h16a2 2 0 012 2v1a2 2 0 01-2 2h-2"/>
-                <rect x="6" y="18" width="12" height="4"/>
-              </svg>
-            } @else if (stat.icono === 'recipe') {
-              <svg class="stat-icon green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
-                <path d="M12 2C8 2 5 5 5 9c0 2.4 1.1 4.5 2.8 5.9L9 22h6l1.2-7.1C17.9 13.5 19 11.4 19 9c0-4-3-7-7-7z"/>
-              </svg>
+  <div class="perfil">
+    <div class="principal">
+
+      <!-- ═══ CABECERA ═══ -->
+      <header class="cabecera">
+        <div class="avatar-zona">
+          <div class="avatar" [class.subiendo]="subiendoFoto()">
+            @if (fotoUrl()) {
+              <img [src]="fotoUrl()" alt="Tu foto de perfil" />
+            } @else {
+              <span>{{ inicial() }}</span>
             }
-            <div class="stat-texto">
-              <span class="stat-valor">{{ stat.valor }}</span>
-              <span class="stat-etiqueta">{{ stat.etiqueta }}</span>
+          </div>
+          <label class="btn-camara" title="Cambiar foto">
+            <input type="file" accept="image/*" (change)="cambiarFoto($event)" [disabled]="subiendoFoto()" />
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" />
+              <circle cx="12" cy="13.5" r="3.5" />
+            </svg>
+            <span class="sr-only">Cambiar foto</span>
+          </label>
+        </div>
+
+        <div class="cabecera-info">
+          <h1>{{ u.nombre }}</h1>
+          <p class="correo">{{ u.correo }}</p>
+          @if (u.bio) {
+            <p class="bio">{{ u.bio }}</p>
+          } @else {
+            <button class="bio-vacia" type="button" (click)="abrirEditor()">Agrega una frase sobre ti</button>
+          }
+          <p class="miembro">
+            <app-icono nombre="reloj" [tamano]="16" />
+            Se unió en {{ miembroDesde() }}
+          </p>
+        </div>
+
+        <div class="cabecera-acciones">
+          <button class="btn btn-secundario" type="button" (click)="abrirEditor()">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 20h4L19 9l-4-4L4 16z" /><path d="M13.5 6.5l4 4" />
+            </svg>
+            Editar perfil
+          </button>
+        </div>
+      </header>
+
+      <!-- ═══ ESTADÍSTICAS ═══ -->
+      <section class="seccion">
+        <h2>Estadísticas</h2>
+        <div class="stats">
+          <a class="stat" routerLink="/dashboard/ranking">
+            <span class="stat-icono icono-oro"><app-icono nombre="estrella" [tamano]="26" /></span>
+            <span class="stat-texto"><strong>{{ xpTotal() }}</strong><small>XP total</small></span>
+          </a>
+          <a class="stat" routerLink="/dashboard/ranking">
+            <svg class="stat-escudo" [class]="'liga-' + liga().clase" viewBox="0 0 64 72" width="34" height="38" aria-hidden="true">
+              <path class="escudo-base" d="M32 2l28 10v20c0 18-12 31-28 38C16 63 4 50 4 32V12z" />
+              <path class="escudo-sombra" d="M32 2l28 10v20c0 18-12 31-28 38z" />
+              <path fill="#fff" d="M32 20l4.7 9.6 10.6 1.5-7.7 7.4 1.8 10.5L32 44l-9.4 5 1.8-10.5-7.7-7.4 10.6-1.5z" />
+            </svg>
+            <span class="stat-texto"><strong>{{ liga().nombre }}</strong><small>Liga actual</small></span>
+          </a>
+          <a class="stat" routerLink="/dashboard/aprender">
+            <span class="stat-icono icono-verde"><app-icono nombre="gorro" [tamano]="26" /></span>
+            <span class="stat-texto"><strong>{{ resumen()!.leccionesCompletadas }}</strong><small>Lecciones</small></span>
+          </a>
+          <a class="stat" routerLink="/dashboard/retos">
+            <span class="stat-icono icono-azul"><app-icono nombre="rayo" [tamano]="26" /></span>
+            <span class="stat-texto"><strong>{{ resumen()!.retosCompletados }}</strong><small>Retos</small></span>
+          </a>
+        </div>
+        @if (ligaSiguiente(); as sig) {
+          <p class="nota">Te faltan {{ sig.desde - xpTotal() }} XP para la Liga {{ sig.nombre }}.</p>
+        }
+      </section>
+
+      <!-- ═══ ACTIVIDAD SEMANAL ═══ -->
+      <section class="seccion">
+        <div class="seccion-cabecera">
+          <h2>Actividad</h2>
+          <span class="seccion-dato">{{ xpSemana() }} XP en 7 días</span>
+        </div>
+
+        <div class="grafica" role="group" aria-label="XP ganado en los últimos 7 días">
+          <!-- capa del mismo alto que la zona de barras, para ubicar la línea de la meta -->
+          <div class="grafica-capa" aria-hidden="true">
+            <div class="grafica-meta" [style.bottom.%]="lineaMeta()">
+              <span>Meta {{ metaDiaria() }}</span>
             </div>
           </div>
-        }
-      </div>
-    </section>
-  </div>
-
-  <!-- Right: Insignias -->
-  <div class="perfil-right">
-    <section class="seccion" style="padding: 0;">
-      <h3 class="seccion-titulo">Insignias</h3>
-      <div class="insignias-grid">
-        @for (ins of insignias; track ins.nombre) {
-          <div class="insignia-item">
-            <div class="insignia-circulo" [style.background-color]="ins.color" [class.bloqueada]="!ins.desbloqueada">
-              @if (ins.icono === 'streak') {
-                <svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26" class="ins-icon orange">
-                  <path d="M13.5 0.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5 0.67z"/>
-                </svg>
-              } @else if (ins.icono === 'leaf') {
-                <svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26" class="ins-icon green">
-                  <path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 008 20C19 20 22 3 22 3c-1 2-8 2-8 2v2c-3 0-5 2-6 4 1-1 4-2 6-2v2z"/>
-                </svg>
-              } @else if (ins.icono === 'recipe') {
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="26" height="26" class="ins-icon pink">
-                  <path d="M12 2C8 2 5 5 5 9c0 2.4 1.1 4.5 2.8 5.9L9 22h6l1.2-7.1C17.9 13.5 19 11.4 19 9c0-4-3-7-7-7z"/>
-                </svg>
-              } @else if (ins.icono === 'lock') {
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="26" height="26" class="ins-icon gray">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                  <path d="M7 11V7a5 5 0 0110 0v4"/>
-                </svg>
+          @for (d of actividad(); track d.fecha; let i = $index) {
+            <button
+              type="button"
+              class="barra-dia"
+              [class.hoy]="d.esHoy"
+              [class.activa]="diaActivo() === i"
+              [class.cumplida]="d.xp >= metaDiaria()"
+              [attr.aria-label]="d.nombreLargo + ': ' + d.xp + ' XP'"
+              (click)="elegirDia(i)"
+            >
+              @if (diaActivo() === i) {
+                <span class="globo-dia">{{ d.xp }} XP</span>
               }
-            </div>
-            <span class="insignia-nombre">{{ ins.nombre }}</span>
+              <span class="barra-zona">
+                <span class="barra" [style.height.%]="d.altura" [style.--orden]="i"></span>
+              </span>
+              <span class="dia-etiqueta">{{ d.etiqueta }}</span>
+            </button>
+          }
+        </div>
+        <p class="nota">Toca una barra para ver el XP de ese día.</p>
+      </section>
+
+      <!-- ═══ LOGROS ═══ -->
+      <section class="seccion">
+        <div class="seccion-cabecera">
+          <h2>Logros</h2>
+          <span class="seccion-dato">{{ logrosConseguidos() }} de {{ logros().length }}</span>
+        </div>
+
+        <div class="filtros" role="tablist">
+          @for (f of [{ id: 'todos', txt: 'Todos' }, { id: 'logrados', txt: 'Logrados' }, { id: 'pendientes', txt: 'En progreso' }]; track f.id) {
+            <button
+              type="button"
+              role="tab"
+              class="filtro"
+              [class.activo]="filtro() === f.id"
+              [attr.aria-selected]="filtro() === f.id"
+              (click)="filtro.set($any(f.id))"
+            >{{ f.txt }}</button>
+          }
+        </div>
+
+        <ul class="logros">
+          @for (l of logrosFiltrados(); track l.titulo) {
+            <li>
+              <button type="button" class="logro" [class.conseguido]="l.actual >= l.meta" (click)="abrirLogro(l)">
+                <span class="logro-icono" [class]="'icono-' + l.color">
+                  <app-icono [nombre]="l.icono" [tamano]="28" />
+                </span>
+                <span class="logro-info">
+                  <strong>{{ l.titulo }}</strong>
+                  <small>{{ l.descripcion }}</small>
+                  <span class="logro-barra">
+                    <span class="logro-fill" [style.width.%]="progresoLogro(l)"></span>
+                    <span class="logro-cuenta">{{ l.actual >= l.meta ? l.meta : l.actual }}/{{ l.meta }}</span>
+                  </span>
+                </span>
+              </button>
+            </li>
+          } @empty {
+            <li class="logros-vacio">
+              {{ filtro() === 'logrados' ? 'Todavía no tienes logros. Completa una lección para conseguir el primero.' : '¡Conseguiste todos los logros!' }}
+            </li>
+          }
+        </ul>
+      </section>
+    </div>
+
+    <!-- ═══ LATERAL ═══ -->
+    <aside class="lateral">
+      <section class="tarjeta">
+        <h2>Meta diaria</h2>
+        <div class="meta">
+          <svg class="anillo" viewBox="0 0 120 120" width="120" height="120" aria-hidden="true">
+            <circle class="anillo-fondo" cx="60" cy="60" r="52" />
+            <circle
+              class="anillo-progreso"
+              [class.completo]="progresoMeta() >= 1"
+              cx="60" cy="60" r="52"
+              [attr.stroke-dasharray]="circunferencia"
+              [attr.stroke-dashoffset]="circunferencia * (1 - progresoMeta())"
+            />
+          </svg>
+          <div class="meta-centro">
+            <strong>{{ xpHoy() }}</strong>
+            <small>de {{ metaDiaria() }} XP</small>
           </div>
-        }
-      </div>
-    </section>
+        </div>
+        <p class="meta-texto">
+          @if (progresoMeta() >= 1) {
+            ¡Cumpliste tu meta de hoy!
+          } @else {
+            Te faltan {{ metaDiaria() - xpHoy() }} XP hoy
+          }
+        </p>
+        <div class="metas" role="radiogroup" aria-label="Elige tu meta diaria">
+          @for (m of metas; track m) {
+            <button
+              type="button"
+              role="radio"
+              class="meta-opcion"
+              [class.activa]="metaDiaria() === m"
+              [attr.aria-checked]="metaDiaria() === m"
+              [disabled]="guardandoMeta() !== null"
+              (click)="elegirMeta(m)"
+            >{{ m }}</button>
+          }
+        </div>
+      </section>
+
+      <section class="tarjeta">
+        <h2>Esta semana</h2>
+        <ul class="datos">
+          <li><span>Posición en el ranking</span><strong>{{ resumen()!.posicionSemanal ? '#' + resumen()!.posicionSemanal : '—' }}</strong></li>
+          <li><span>XP ganado</span><strong>{{ xpSemana() }}</strong></li>
+          <li><span>Días con actividad</span><strong>{{ resumen()!.diasActivos }}</strong></li>
+          <li><span>Lecciones perfectas</span><strong>{{ resumen()!.leccionesPerfectas }}</strong></li>
+        </ul>
+        <a class="btn btn-azul btn-ancho" routerLink="/dashboard/ranking">Ver ranking</a>
+      </section>
+
+      <button class="btn-logout" type="button" (click)="logout()">Cerrar sesión</button>
+    </aside>
   </div>
 
-</div>
+  <!-- ═══ EDITOR DE PERFIL ═══ -->
+  @if (editando()) {
+    <div class="modal-fondo" (click)="cerrarEditor()">
+      <form class="modal" role="dialog" aria-modal="true" aria-labelledby="titulo-editor" (click)="$event.stopPropagation()" (submit)="$event.preventDefault(); guardarPerfil()">
+        <h2 id="titulo-editor">Editar perfil</h2>
+
+        <div class="editor-foto">
+          <div class="avatar avatar-chico">
+            @if (formPreview() ?? fotoUrl(); as src) {
+              <img [src]="src" alt="" />
+            } @else {
+              <span>{{ inicial() }}</span>
+            }
+          </div>
+          <label class="btn btn-secundario btn-archivo">
+            <input type="file" accept="image/*" (change)="elegirFotoForm($event)" />
+            Elegir foto
+          </label>
+        </div>
+
+        <label class="campo">
+          <span>Nombre</span>
+          <input type="text" maxlength="100" [value]="formNombre()" (input)="formNombre.set($any($event.target).value)" autocomplete="name" />
+        </label>
+
+        <label class="campo">
+          <span>Sobre ti <small>{{ formBio().length }}/160</small></span>
+          <textarea rows="3" maxlength="160" placeholder="Ej. Me encanta cocinar pastas" [value]="formBio()" (input)="formBio.set($any($event.target).value)"></textarea>
+        </label>
+
+        @if (errorForm()) {
+          <p class="error-form" role="alert">{{ errorForm() }}</p>
+        }
+
+        <div class="modal-acciones">
+          <button class="btn btn-secundario" type="button" (click)="cerrarEditor()" [disabled]="guardando()">Cancelar</button>
+          <button class="btn" type="submit" [disabled]="guardando()">{{ guardando() ? 'Guardando…' : 'Guardar' }}</button>
+        </div>
+      </form>
+    </div>
+  }
+
+  <!-- ═══ DETALLE DE LOGRO ═══ -->
+  @if (logroAbierto(); as l) {
+    <div class="modal-fondo" (click)="logroAbierto.set(null)">
+      <div class="modal modal-logro" role="dialog" aria-modal="true" [attr.aria-label]="l.titulo" (click)="$event.stopPropagation()">
+        <span class="logro-icono logro-icono-grande" [class]="'icono-' + l.color" [class.bloqueado]="l.actual < l.meta">
+          <app-icono [nombre]="l.icono" [tamano]="52" />
+        </span>
+        <h2>{{ l.titulo }}</h2>
+        <p>{{ l.descripcion }}</p>
+        <div class="logro-barra logro-barra-grande">
+          <span class="logro-fill" [style.width.%]="progresoLogro(l)"></span>
+          <span class="logro-cuenta">{{ l.actual >= l.meta ? l.meta : l.actual }}/{{ l.meta }}</span>
+        </div>
+        <p class="logro-estado">{{ l.actual >= l.meta ? '¡Logro conseguido!' : 'Te faltan ' + (l.meta - l.actual) + ' para conseguirlo' }}</p>
+        <button class="btn btn-ancho" type="button" (click)="logroAbierto.set(null)">Entendido</button>
+      </div>
+    </div>
+  }
+}
+
+<!-- Aviso flotante -->
+@if (aviso(); as a) {
+  <div class="aviso" [class.aviso-error]="a.tipo === 'error'" role="status">{{ a.texto }}</div>
+}
