@@ -5,16 +5,14 @@ const {
   completar,
   rankingDiario,
   rankingSemanal,
-  misDiamantes,
 } = require('../controllers/retosController');
 
 const router = express.Router();
 
 // Todas las rutas requieren JWT
-router.get('/',                    authMiddleware, getRetos);
-router.post('/:id/completar',      authMiddleware, completar);
-router.get('/ranking/diario',      authMiddleware, rankingDiario);
-router.get('/ranking/semanal',     authMiddleware, rankingSemanal);
-router.get('/mis-diamantes',       authMiddleware, misDiamantes);
+router.get('/',                authMiddleware, getRetos);
+router.post('/:id/completar',  authMiddleware, completar);
+router.get('/ranking/diario',  authMiddleware, rankingDiario);
+router.get('/ranking/semanal', authMiddleware, rankingSemanal);
 
 module.exports = router;

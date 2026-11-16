@@ -16,6 +16,8 @@ const userRoutes = require('./routes/userRoutes');
 const progressRoutes = require('./routes/progressRoutes');
 const retosRoutes    = require('./routes/retosRoutes');
 const { ensureProgressTable } = require('./queries/progressQueries');
+const { ensureXpTable } = require('./queries/xpQueries');
+const { ensureRetosJuegos } = require('./queries/retosQueries');
 
 const app = express();
 
@@ -23,6 +25,8 @@ const app = express();
 pool.query('SELECT 1')
   .then(() => console.log('✅ Conectado a PostgreSQL correctamente'))
   .then(() => ensureProgressTable())
+  .then(() => ensureXpTable())
+  .then(() => ensureRetosJuegos())
   .catch((err) => console.error('❌ Error al conectar a PostgreSQL:', err.message));
 
 // Middlewares

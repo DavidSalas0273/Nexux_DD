@@ -1,4 +1,6 @@
 const pool = require('../config/database');
+const { ensureXpTable } = require('../queries/xpQueries');
+const { ensureRetosJuegos } = require('../queries/retosQueries');
 
 async function initDatabase() {
   try {
@@ -81,25 +83,18 @@ async function initDatabase() {
     `);
     console.log('Tabla "diamantes_ranking" creada correctamente');
 
+    // Retos como minijuegos (columna "juego") y registro de XP para el ranking
+    await pool.query(`
+      ALTER TABLE retos ADD COLUMN IF NOT EXISTS juego VARCHAR(20);
+      ALTER TABLE retos ALTER COLUMN icono TYPE VARCHAR(30);
+    `);
+    await ensureXpTable();
+    console.log('Tabla "xp_eventos" creada correctamente');
+
     // Insertar retos base (limpia e inserta para tener siempre los datos frescos)
     await pool.query(`DELETE FROM retos;`);
-    await pool.query(`
-      INSERT INTO retos (titulo, descripcion, icono, xp, tipo, categoria) VALUES
-        ('Practica un corte básico',       'Completa la lección de cortes de la unidad Fundamentos',                       '🔪', 40,  'diario',   'fundamentos'),
-        ('Prepara una ensalada',           'Termina la lección de ensaladas y guarniciones',                               '🥗', 30,  'diario',   'fundamentos'),
-        ('Domina la sartén',               'Completa la lección de técnicas en sartén de Fundamentos',                     '🍳', 35,  'diario',   'fundamentos'),
-        ('Prueba la bechamel',             'Avanza en la lección de salsas madre con bechamel',                            '🌿', 50,  'diario',   'salsas'),
-        ('Cocina una salsa de tomate',     'Completa la lección de salsa de tomate en Salsas madre',                       '🍲', 50,  'diario',   'salsas'),
-        ('Racha sin errores',              'Responde correctamente todas las preguntas de una lección de hoy',             '🎯', 25,  'diario',   'general'),
-        ('Velocista',                      'Responde 3 preguntas seguidas en menos de 5 segundos cada una',                '⚡', 20,  'diario',   'general'),
-        ('Maestro de Fundamentos',         'Completa todas las lecciones de la unidad Fundamentos esta semana',            '🏆', 200, 'semanal',  'fundamentos'),
-        ('Experto en salsas madre',        'Completa toda la unidad de Salsas madre: bechamel, tomate y vinagreta',        '🍲', 180, 'semanal',  'salsas'),
-        ('Inicio en Proteínas',            'Desbloquea y completa la primera lección de la unidad Proteínas',              '🥩', 120, 'semanal',  'proteinas'),
-        ('Sin errores 5 días',             'Completa al menos una lección sin fallos durante 5 días distintos',            '🎯', 150, 'semanal',  'general'),
-        ('Constancia semanal',             'Entra a la app y completa al menos un reto diario 5 días de la semana',        '📅', 100, 'semanal',  'general'),
-        ('Chef en formación',              'Acumula 150 XP o más completando retos diarios esta semana',                   '👨‍🍳', 130, 'semanal',  'general');
-    `);
-    console.log('Retos base insertados correctamente (13 retos)');
+    await ensureRetosJuegos();
+    console.log('Retos de minijuegos insertados correctamente (6 retos)');
 
     console.log('✅ Base de datos inicializada con éxito');
 

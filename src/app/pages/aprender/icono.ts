@@ -90,6 +90,28 @@ import { Component, input } from '@angular/core';
           <svg:path fill="currentColor" stroke="none" d="M3 10.5h18c0 4.5-3.6 8.2-8.1 8.2h-1.8C6.6 18.7 3 15 3 10.5z" />
           <svg:rect fill="currentColor" stroke="none" x="8" y="19" width="8" height="2.2" rx="1.1" />
         }
+        @case ('rayo') {
+          <svg:path fill="currentColor" stroke-width="1.6" d="M13.5 2.5L5 13.5h6l-1.5 8 8.5-11h-6z" />
+        }
+        @case ('balanza') {
+          <svg:path stroke-width="2.4" d="M12 4v16M7 20h10M5 7h14" />
+          <svg:path fill="currentColor" stroke="none" d="M5 8l-3 6.5a3.2 3.2 0 0 0 6 0zM19 8l-3 6.5a3.2 3.2 0 0 0 6 0z" />
+        }
+        @case ('parejas') {
+          <svg:rect fill="currentColor" stroke="none" x="2.5" y="4" width="8" height="6" rx="2" />
+          <svg:rect fill="currentColor" stroke="none" x="13.5" y="14" width="8" height="6" rx="2" />
+          <svg:path stroke-width="2.4" d="M10.5 7h3a3 3 0 0 1 3 3v4M13.5 17h-3a3 3 0 0 1-3-3v-4" />
+        }
+        @case ('lista') {
+          <svg:path stroke-width="2.6" d="M10 6h10M10 12h10M10 18h10" />
+          <svg:circle fill="currentColor" stroke="none" cx="5" cy="6" r="2" />
+          <svg:circle fill="currentColor" stroke="none" cx="5" cy="12" r="2" />
+          <svg:circle fill="currentColor" stroke="none" cx="5" cy="18" r="2" />
+        }
+        @case ('reloj') {
+          <svg:circle stroke-width="2.4" cx="12" cy="13" r="8" />
+          <svg:path stroke-width="2.4" d="M12 9v4l2.5 2M9.5 2.5h5" />
+        }
         @case ('diana') {
           <svg:circle stroke-width="2.4" cx="12" cy="12" r="8.5" />
           <svg:circle stroke-width="2.4" cx="12" cy="12" r="4.5" />

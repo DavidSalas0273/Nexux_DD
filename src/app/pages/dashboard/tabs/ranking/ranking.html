@@ -1,118 +1,105 @@
-<div class="ranking-container">
+<div class="ranking">
 
-  <div class="ranking-header">
-    <div>
-      <h2>Ranking</h2>
-      <p class="ranking-sub">Gana XP completando retos y sube de posición</p>
-    </div>
-    <div class="header-right">
-      <div class="liga-badge">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-          <polyline points="6 9 6 2 18 2 18 9"/>
-          <path d="M6 18H4a2 2 0 01-2-2v-1a2 2 0 012-2h16a2 2 0 012 2v1a2 2 0 01-2 2h-2"/>
-          <rect x="6" y="18" width="12" height="4"/>
-        </svg>
-        Liga {{ liga }}
+  <div class="principal">
+    <!-- ═══ LIGA ═══ -->
+    <header class="liga" [class]="'liga-' + liga().clase">
+      <svg class="escudo" viewBox="0 0 64 72" width="72" height="80" aria-hidden="true">
+        <path class="escudo-base" d="M32 2l28 10v20c0 18-12 31-28 38C16 63 4 50 4 32V12z" />
+        <path class="escudo-sombra" d="M32 2l28 10v20c0 18-12 31-28 38z" />
+        <path fill="#fff" d="M32 20l4.7 9.6 10.6 1.5-7.7 7.4 1.8 10.5L32 44l-9.4 5 1.8-10.5-7.7-7.4 10.6-1.5z" />
+      </svg>
+      <div>
+        <h1>Liga {{ liga().nombre }}</h1>
+        @if (siguienteLiga(); as sig) {
+          <p>Te faltan {{ faltaXp() }} XP para la Liga {{ sig.nombre }}</p>
+          <div class="liga-barra"><div class="liga-fill" [style.width.%]="progresoLiga()"></div></div>
+        } @else {
+          <p>Estás en la liga más alta</p>
+        }
       </div>
-      @if (diamantesUsuario() > 0) {
-        <div class="diamantes-badge">💎 {{ diamantesUsuario() | number }}</div>
+    </header>
+
+    <!-- ═══ PERIODO ═══ -->
+    <div class="periodos" role="tablist">
+      <button type="button" role="tab" class="periodo" [class.activo]="periodo() === 'diario'" [attr.aria-selected]="periodo() === 'diario'" (click)="periodo.set('diario')">Hoy</button>
+      <button type="button" role="tab" class="periodo" [class.activo]="periodo() === 'semanal'" [attr.aria-selected]="periodo() === 'semanal'" (click)="periodo.set('semanal')">Esta semana</button>
+    </div>
+
+    @if (cargando()) {
+      <div class="esqueleto">
+        @for (i of [0, 1, 2, 3, 4]; track i) {
+          <div class="esqueleto-fila"></div>
+        }
+      </div>
+    } @else if (error()) {
+      <div class="vacio">
+        <p>No se pudo cargar el ranking. Revisa que el servidor esté encendido.</p>
+        <button class="btn" type="button" (click)="cargar()">Reintentar</button>
+      </div>
+    } @else {
+      @if (!hayXp()) {
+        <p class="aviso">Nadie ha ganado XP {{ periodo() === 'diario' ? 'hoy' : 'esta semana' }}. Termina una lección o juega un reto para subir al primer lugar.</p>
       }
-    </div>
-  </div>
 
-  <!-- Premio semanal aviso -->
-  @if (tab() === 'semanal') {
-    <div class="premio-aviso">
-      🏆 Al finalizar la semana: <strong>🥇 💎 500 &nbsp;·&nbsp; 🥈 💎 300 &nbsp;·&nbsp; 🥉 💎 150</strong>
-    </div>
-  }
-
-  <!-- Tabs -->
-  <div class="tabs-wrapper">
-    <button class="tab-btn" [class.activo]="tab() === 'diario'" (click)="cambiarTab('diario')">
-      📅 Hoy
-    </button>
-    <button class="tab-btn" [class.activo]="tab() === 'semanal'" (click)="cambiarTab('semanal')">
-      📆 Esta semana
-    </button>
-  </div>
-
-  @if (cargando()) {
-    <div class="cargando">Cargando ranking...</div>
-  } @else {
-
-    <div class="ranking-body">
-
-      <div class="ranking-lista">
-        @for (jugador of jugadores; track jugador.posicion) {
-          <div class="jugador-fila" [class.yo]="jugador.esUsuario" [class.top3]="jugador.posicion <= 3">
-            <span class="posicion">
-              @if (getMedalla(jugador.posicion)) {
-                {{ getMedalla(jugador.posicion) }}
+      <ol class="lista">
+        @for (j of jugadores(); track j.id) {
+          <li class="fila" [class.yo]="j.esUsuario" [style.--orden]="$index">
+            <span class="posicion" [class]="j.posicion <= 3 && j.xp > 0 ? 'medalla medalla-' + j.posicion : ''">
+              {{ j.posicion }}
+            </span>
+            <span class="avatar" [style.background]="colorAvatar(j.id)">
+              @if (fotoUrl(j); as foto) {
+                <img [src]="foto" alt="" />
               } @else {
-                {{ jugador.posicion }}
+                {{ j.nombre.charAt(0).toUpperCase() }}
               }
             </span>
-            <div class="jugador-avatar" [class.yo-avatar]="jugador.esUsuario">
-              {{ jugador.nombre.charAt(0).toUpperCase() }}
-            </div>
-            <div class="jugador-info">
-              <span class="jugador-nombre">
-                {{ jugador.nombre }}
-                @if (jugador.esUsuario) { <span class="yo-label">(tú)</span> }
-              </span>
-              <span class="jugador-xp">{{ jugador.xp | number }} XP</span>
-            </div>
-            <div class="jugador-derecha">
-              <div class="xp-bar-wrapper">
-                <div class="xp-bar-fill" [style.width.%]="(jugador.xp / maxXp()) * 100"></div>
-              </div>
-              @if (getPremio(jugador.posicion)) {
-                <span class="premio-diamantes">{{ getPremio(jugador.posicion) }}</span>
-              }
-            </div>
+            <span class="nombre">
+              {{ j.nombre }}
+              @if (j.esUsuario) { <small>Tú</small> }
+            </span>
+            <span class="xp">{{ j.xp }} XP</span>
+          </li>
+        }
+      </ol>
+    }
+  </div>
+
+  <!-- ═══ LATERAL (escritorio) ═══ -->
+  <aside class="lateral">
+    <div class="tarjeta">
+      <h2>Tu posición</h2>
+      @if (yo(); as me) {
+        <div class="mi-posicion">
+          <span class="mi-numero">{{ me.posicion }}</span>
+          <div>
+            <strong>{{ me.xp }} XP</strong>
+            <span>{{ periodo() === 'diario' ? 'ganados hoy' : 'ganados esta semana' }}</span>
           </div>
-        }
-
-        @if (jugadores.length === 0) {
-          <div class="sin-datos">Aún no hay datos para este periodo. ¡Completa un reto para aparecer!</div>
-        }
-      </div>
-
-      <!-- Desktop aside -->
-      <div class="ranking-aside">
-        <div class="podium-card">
-          <div class="podium-title">Top 3</div>
-          @for (j of jugadores.slice(0, 3); track j.posicion) {
-            <div class="podium-row">
-              <span class="podium-medal">{{ getMedalla(j.posicion) }}</span>
-              <div class="podium-info">
-                <div class="podium-nombre">{{ j.nombre }}</div>
-                <div class="podium-xp">{{ j.xp | number }} XP</div>
-              </div>
-              <div class="podium-premio">{{ getPremio(j.posicion) }}</div>
-            </div>
-          }
         </div>
-
-        <div class="liga-card">
-          <span class="liga-card-label">Tu liga</span>
-          <span class="liga-card-name">
-            @if (liga === 'Oro') { 🥇 }
-            @else if (liga === 'Plata') { 🥈 }
-            @else { 🥉 }
-            {{ liga }}
-          </span>
-          @if (posicionUsuario() > 0) {
-            <span class="liga-card-sub">Posición {{ posicionUsuario() }} — ¡sigue completando retos!</span>
-          }
-          @if (diamantesUsuario() > 0) {
-            <span class="liga-card-diamantes">💎 {{ diamantesUsuario() | number }} diamantes</span>
-          }
-        </div>
-      </div>
-
+      } @else {
+        <p class="tarjeta-texto">Gana XP para aparecer en la tabla.</p>
+      }
     </div>
-  }
 
+    <div class="tarjeta">
+      <h2>Cómo ganar XP</h2>
+      <ul class="formas">
+        <li>
+          <span class="forma-icono forma-verde"><app-icono nombre="gorro" [tamano]="22" /></span>
+          <div>
+            <strong>Lecciones</strong>
+            <span>10 XP más 2 por cada respuesta correcta</span>
+          </div>
+        </li>
+        <li>
+          <span class="forma-icono forma-oro"><app-icono nombre="rayo" [tamano]="22" /></span>
+          <div>
+            <strong>Retos</strong>
+            <span>El XP de cada reto si aciertas al menos 60%</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </aside>
 </div>

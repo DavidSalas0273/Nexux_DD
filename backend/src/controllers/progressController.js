@@ -1,4 +1,8 @@
 const { getProgressByUser, saveLevelProgress } = require('../queries/progressQueries');
+const { registrarXp } = require('../queries/xpQueries');
+
+// XP por terminar una lección: 10 base + 2 por cada respuesta correcta
+const xpPorLeccion = (puntaje) => 10 + puntaje * 2;
 
 /**
  * GET /api/progress
@@ -30,7 +34,9 @@ async function saveProgress(req, res) {
 
   try {
     const nivel = await saveLevelProgress(req.userId, nivelId, puntaje, total);
-    res.json({ nivel });
+    const xpGanado = xpPorLeccion(puntaje);
+    const xpTotal = await registrarXp(req.userId, 'leccion', nivelId, xpGanado);
+    res.json({ nivel, xpGanado, xpTotal });
   } catch (error) {
     console.error('Error en saveProgress:', error);
     res.status(500).json({ error: 'Error interno del servidor' });

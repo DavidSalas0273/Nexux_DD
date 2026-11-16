@@ -1,112 +1,97 @@
 const {
   getRetosConEstado,
+  getRetoActivo,
   yaCompleto,
   completarReto,
-  getStatsUsuario,
-  getRankingDiario,
-  getRankingSemanal,
+  getXpUsuario,
 } = require('../queries/retosQueries');
+const { getRanking } = require('../queries/xpQueries');
 
-// GET /api/retos  — devuelve retos diarios y semanales con estado del usuario
+// Porcentaje mínimo de aciertos para ganar el XP de un reto
+const MINIMO_ACIERTOS = 0.6;
+
+// GET /api/retos — retos diarios y semanales con el estado del usuario, y su XP total
 async function getRetos(req, res) {
   try {
-    const retos = await getRetosConEstado(req.userId);
-    const diarios   = retos.filter(r => r.tipo === 'diario');
-    const semanales = retos.filter(r => r.tipo === 'semanal');
-    res.json({ diarios, semanales });
+    const [retos, xpTotal] = await Promise.all([
+      getRetosConEstado(req.userId),
+      getXpUsuario(req.userId),
+    ]);
+    res.json({
+      diarios: retos.filter((r) => r.tipo === 'diario'),
+      semanales: retos.filter((r) => r.tipo === 'semanal'),
+      xpTotal,
+    });
   } catch (error) {
     console.error('[getRetos]', error.message);
     res.status(500).json({ error: 'Error al obtener retos' });
   }
 }
 
-// POST /api/retos/:id/completar
+// POST /api/retos/:id/completar — body: { aciertos, total }
 async function completar(req, res) {
   try {
-    const retoId = parseInt(req.params.id);
-    const usuarioId = req.userId;
+    const retoId = Number.parseInt(req.params.id, 10);
+    const aciertos = Number(req.body?.aciertos);
+    const total = Number(req.body?.total);
 
-    // Buscar el reto en la DB
-    const pool = require('../config/database');
-    const retoResult = await pool.query('SELECT * FROM retos WHERE id = $1 AND activo = true', [retoId]);
-    if (retoResult.rows.length === 0) {
+    if (!Number.isInteger(retoId)) {
+      return res.status(400).json({ error: 'Reto inválido' });
+    }
+    if (!Number.isInteger(aciertos) || !Number.isInteger(total) || total < 1 || aciertos < 0 || aciertos > total) {
+      return res.status(400).json({ error: 'Resultado del juego inválido' });
+    }
+    if (aciertos / total < MINIMO_ACIERTOS) {
+      return res.status(400).json({ error: 'Necesitas al menos 60% de aciertos para ganar el XP' });
+    }
+
+    const reto = await getRetoActivo(retoId);
+    if (!reto) {
       return res.status(404).json({ error: 'Reto no encontrado' });
     }
-    const reto = retoResult.rows[0];
 
-    // Verificar si ya lo completó
-    const completado = await yaCompleto(usuarioId, retoId, reto.tipo);
-    if (completado) {
+    if (await yaCompleto(req.userId, retoId)) {
       return res.status(409).json({ error: 'Ya completaste este reto en el periodo actual' });
     }
 
-    // Registrar y sumar XP
-    const xpTotal = await completarReto(usuarioId, retoId, reto.xp, reto.tipo);
-
-    res.json({
-      message: 'Reto completado',
-      xpGanado: reto.xp,
-      xpTotal,
-    });
+    const xpTotal = await completarReto(req.userId, reto);
+    res.json({ message: 'Reto completado', xpGanado: reto.xp, xpTotal });
   } catch (error) {
     console.error('[completar]', error.message);
     res.status(500).json({ error: 'Error al completar reto' });
   }
 }
 
-// GET /api/retos/ranking/diario
+function conPosicion(jugadores, usuarioId) {
+  return jugadores.map((j, i) => ({
+    posicion: i + 1,
+    id: j.id,
+    nombre: j.nombre,
+    foto: j.foto,
+    xp: Number(j.xp),
+    xpTotal: Number(j.xp_total),
+    esUsuario: j.id === usuarioId,
+  }));
+}
+
+// GET /api/retos/ranking/diario — XP ganado hoy (lecciones + retos)
 async function rankingDiario(req, res) {
   try {
-    const jugadores = await getRankingDiario();
-    const conPosicion = jugadores.map((j, i) => ({
-      posicion: i + 1,
-      id: j.id,
-      nombre: j.nombre,
-      foto: j.foto,
-      xp: parseInt(j.xp),
-      diamantes: parseInt(j.diamantes ?? 0),
-      premioDiamantes: 0,
-      esUsuario: j.id === req.userId,
-    }));
-    res.json(conPosicion);
+    res.json(conPosicion(await getRanking('diario'), req.userId));
   } catch (error) {
     console.error('[rankingDiario]', error.message);
     res.status(500).json({ error: 'Error al obtener ranking diario' });
   }
 }
 
-// GET /api/retos/ranking/semanal
+// GET /api/retos/ranking/semanal — XP ganado desde el lunes (lecciones + retos)
 async function rankingSemanal(req, res) {
   try {
-    const jugadores = await getRankingSemanal();
-    // Premios de diamantes: top3 recibe 10, 7, 5
-    const premios = [10, 7, 5];
-    const conPosicion = jugadores.map((j, i) => ({
-      posicion: i + 1,
-      id: j.id,
-      nombre: j.nombre,
-      foto: j.foto,
-      xp: parseInt(j.xp),
-      diamantes: parseInt(j.diamantes ?? 0),
-      premioDiamantes: premios[i] ?? 0,
-      esUsuario: j.id === req.userId,
-    }));
-    res.json(conPosicion);
+    res.json(conPosicion(await getRanking('semanal'), req.userId));
   } catch (error) {
     console.error('[rankingSemanal]', error.message);
     res.status(500).json({ error: 'Error al obtener ranking semanal' });
   }
 }
 
-// GET /api/retos/mis-diamantes
-async function misDiamantes(req, res) {
-  try {
-    const stats = await getStatsUsuario(req.userId);
-    res.json({ diamantes: stats.diamantes ?? 0 });
-  } catch (error) {
-    console.error('[misDiamantes]', error.message);
-    res.status(500).json({ error: 'Error al obtener diamantes' });
-  }
-}
-
-module.exports = { getRetos, completar, rankingDiario, rankingSemanal, misDiamantes };
+module.exports = { getRetos, completar, rankingDiario, rankingSemanal };

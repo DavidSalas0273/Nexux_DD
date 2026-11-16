@@ -58,23 +58,6 @@ button:focus-visible {
   background: #fff;
 }
 
-/* ── Contadores (racha, gemas, vidas) ────────── */
-.stat {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.35rem 0.55rem;
-  border-radius: 12px;
-  font-size: 1.05rem;
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
-}
-
-.stat svg { flex-shrink: 0; }
-.stat.streak { color: #ff9600; }
-.stat.gems   { color: var(--azul); }
-.stat.lives  { color: #ff4b4b; }
-
 /* ── Iconos de navegación ────────────────────── */
 .nav-icono {
   flex-shrink: 0;
@@ -84,19 +67,6 @@ button:focus-visible {
 /* ════════════════════════════════════════════
    MÓVIL
 ════════════════════════════════════════════ */
-.top-bar {
-  padding: 0.5rem 1rem;
-  background: #fff;
-  border-bottom: 2px solid var(--borde);
-  flex-shrink: 0;
-}
-
-.top-bar-stats {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .bottom-nav {
   display: flex;
   justify-content: space-around;
@@ -223,24 +193,13 @@ button:focus-visible {
 
   .sidebar-spacer { flex: 1; min-height: 1.5rem; }
 
-  /* Contadores */
-  .sidebar-stats {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.5rem;
-    border: 2px solid var(--borde);
-    border-radius: 16px;
-  }
-
-  .sidebar-stats .stat { font-size: 1rem; }
-
   /* Usuario */
   .sidebar-usuario {
     display: flex;
     align-items: center;
     gap: 0.7rem;
-    margin-top: 0.75rem;
-    padding: 0.6rem 0.5rem 0.6rem 0.6rem;
+    padding: 0.75rem 0.5rem 0.75rem 0.6rem;
+    border: 2px solid var(--borde);
     border-radius: 16px;
   }
 
@@ -309,7 +268,6 @@ button:focus-visible {
 
   /* Panel derecho */
   .shell-right { height: 100dvh; }
-  .top-bar { display: none; }
   .main-content { height: 100dvh; }
   .bottom-nav { display: none; }
 }
