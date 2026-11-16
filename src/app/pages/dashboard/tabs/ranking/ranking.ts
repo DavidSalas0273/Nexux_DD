@@ -1,22 +1,9 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RetosService, JugadorRanking } from '../../../../services/retos.service';
 import { Icono } from '../../../aprender/icono';
+import { ligaPara, siguienteLiga } from '../../../../shared/ligas';
 
 type Periodo = 'diario' | 'semanal';
-
-interface Liga {
-  nombre: string;
-  clase: string;
-  desde: number;
-}
-
-/** Ligas según el XP total acumulado. */
-const LIGAS: Liga[] = [
-  { nombre: 'Bronce', clase: 'bronce', desde: 0 },
-  { nombre: 'Plata', clase: 'plata', desde: 150 },
-  { nombre: 'Oro', clase: 'oro', desde: 400 },
-  { nombre: 'Esmeralda', clase: 'esmeralda', desde: 900 },
-];
 
 @Component({
   selector: 'app-ranking',
@@ -40,9 +27,9 @@ export class Ranking implements OnInit {
   /** XP total del usuario (es el mismo en ambos periodos). */
   private xpTotal = computed(() => (this.semanal().find((j) => j.esUsuario) ?? this.diario().find((j) => j.esUsuario))?.xpTotal ?? 0);
 
-  liga = computed(() => [...LIGAS].reverse().find((l) => this.xpTotal() >= l.desde) ?? LIGAS[0]);
+  liga = computed(() => ligaPara(this.xpTotal()));
 
-  siguienteLiga = computed(() => LIGAS.find((l) => l.desde > this.xpTotal()) ?? null);
+  siguienteLiga = computed(() => siguienteLiga(this.xpTotal()));
 
   progresoLiga = computed(() => {
     const actual = this.liga();

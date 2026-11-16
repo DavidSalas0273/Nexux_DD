@@ -63,6 +63,14 @@ export class AuthService {
   }
 
   /**
+   * Actualiza los datos del usuario en sesión (por ejemplo, tras editar el perfil).
+   */
+  actualizarUsuario(user: User): void {
+    localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+    this.currentUser.set(user);
+  }
+
+  /**
    * Guarda el token y el usuario en localStorage.
    */
   private setSession(res: AuthResponse): void {
