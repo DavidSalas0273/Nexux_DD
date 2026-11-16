@@ -14,6 +14,7 @@ const pool = require('./config/database');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const progressRoutes = require('./routes/progressRoutes');
+const retosRoutes    = require('./routes/retosRoutes');
 const { ensureProgressTable } = require('./queries/progressQueries');
 
 const app = express();
@@ -33,9 +34,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Rutas
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
+app.use('/api/auth',     authRoutes);
+app.use('/api/users',    userRoutes);
 app.use('/api/progress', progressRoutes);
+app.use('/api/retos',    retosRoutes);
 
 // Ruta de health check
 app.get('/api/health', (req, res) => {
