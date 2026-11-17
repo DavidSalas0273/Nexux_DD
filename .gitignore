@@ -48,3 +48,6 @@ public/*.mp4
 public/*.webm
 public/*.mov
 public/*.avi
+
+# Backend (repo separado)
+backend/
