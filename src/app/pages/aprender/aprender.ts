@@ -501,8 +501,8 @@ export class Aprender {
       autor: 'Giacomo Bocchio',
       tema: 'verde',
       video: {
-        tipo: 'archivo',
-        src: '/TE VOY A ENSEÑAR 7 TÉCNICAS CULINARIAS QUE TODO COCINERO DEBE SABER _ GIACOMO BOCCHIO.mp4',
+        tipo: 'youtube',
+        src: 'https://www.youtube-nocookie.com/embed/FXZkvjSf05Y',
       },
       niveles: this.nivelesUnidad1,
     },
