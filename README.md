@@ -74,21 +74,6 @@ copy .env.example .env
 cp .env.example .env
 ```
 
-Abre el archivo `.env` y completa tus datos:
-
-```env
-PORT=3000
-
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=tu_contraseña_aqui
-DB_NAME=nexus_dd
-
-JWT_SECRET=cambia_esto_por_una_clave_segura
-JWT_EXPIRES_IN=24h
-
-UPLOAD_DIR=uploads
 ```
 
 #### 2.3 Crear la base de datos en PostgreSQL
@@ -162,40 +147,7 @@ El frontend quedará corriendo en: **http://localhost:4200**
 
 ---
 
-## Endpoints de la API
 
-| Método | Ruta | Descripción | Autenticación |
-|--------|------|-------------|---------------|
-| GET | `/api/health` | Estado del servidor | No |
-| POST | `/api/auth/register` | Registrar nuevo usuario | No |
-| POST | `/api/auth/login` | Iniciar sesión | No |
-| GET | `/api/users/profile` | Obtener perfil del usuario | Sí (Bearer JWT) |
-
-### Ejemplo: Registro
-
-```
-POST http://localhost:3000/api/auth/register
-Content-Type: multipart/form-data
-
-nombre: Juan Pérez
-correo: juan@ejemplo.com
-password: micontraseña123
-foto: (archivo de imagen, opcional)
-```
-
-### Ejemplo: Login
-
-```
-POST http://localhost:3000/api/auth/login
-Content-Type: application/json
-
-{
-  "correo": "juan@ejemplo.com",
-  "password": "micontraseña123"
-}
-```
-
----
 
 ## Tecnologías utilizadas
 
@@ -214,10 +166,3 @@ Content-Type: application/json
 
 ---
 
-## Ramas del repositorio
-
-| Rama | Descripción |
-|------|-------------|
-| `main` | Código estable de producción |
-| `develop` | Rama de integración |
-| `feature-david-login-usuario` | Feature de login y registro de usuarios |
