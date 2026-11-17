@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { User } from '../models/user.model';
 import { AuthService } from './auth.service';
+import { environment } from '../../environments/environment';
 
 export interface DiaActividad {
   /** YYYY-MM-DD */
@@ -47,7 +48,7 @@ export interface PerfilActualizado {
 export class PerfilService {
   private http = inject(HttpClient);
   private auth = inject(AuthService);
-  private readonly API = 'http://localhost:3000/api/users/profile';
+  private readonly API = `${environment.apiUrl}/users/profile`;
 
   /** Metas diarias que se pueden elegir (deben coincidir con el backend). */
   readonly metasDiarias = [10, 20, 30, 50];

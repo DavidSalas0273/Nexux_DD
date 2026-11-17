@@ -2,11 +2,12 @@ import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { AuthResponse, LoginRequest, RegisterRequest, User } from '../models/user.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
-  private readonly API_URL = 'http://localhost:3000/api';
+  private readonly API_URL = environment.apiUrl;
   private readonly TOKEN_KEY = 'nexus_dd_token';
   private readonly USER_KEY = 'nexus_dd_user';
 

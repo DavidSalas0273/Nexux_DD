@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 /** Minijuego que abre cada reto. */
 export type TipoJuego = 'relampago' | 'vf' | 'parejas' | 'ordenar' | 'maraton' | 'ordenar3';
@@ -44,7 +45,7 @@ export interface JugadorRanking {
 @Injectable({ providedIn: 'root' })
 export class RetosService {
   private http = inject(HttpClient);
-  private readonly API = 'http://localhost:3000/api/retos';
+  private readonly API = `${environment.apiUrl}/retos`;
 
   getRetos(): Observable<RetosResponse> {
     return this.http.get<RetosResponse>(this.API);

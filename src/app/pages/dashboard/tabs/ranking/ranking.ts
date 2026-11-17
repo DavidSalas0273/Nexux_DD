@@ -2,6 +2,7 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RetosService, JugadorRanking } from '../../../../services/retos.service';
 import { Icono } from '../../../aprender/icono';
 import { ligaPara, siguienteLiga } from '../../../../shared/ligas';
+import { environment } from '../../../../../environments/environment';
 
 type Periodo = 'diario' | 'semanal';
 
@@ -70,7 +71,7 @@ export class Ranking implements OnInit {
   }
 
   fotoUrl(j: JugadorRanking): string | null {
-    return j.foto ? `http://localhost:3000${j.foto}` : null;
+    return j.foto ? `${environment.apiUrl.replace('/api', '')}${j.foto}` : null;
   }
 
   /** Color de avatar estable por usuario. */
