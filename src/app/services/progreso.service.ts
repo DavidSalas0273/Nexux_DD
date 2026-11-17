@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { AuthService } from './auth.service';
+import { environment } from '../../environments/environment';
 
 export interface ProgresoNivel {
   nivel_id: number;
@@ -19,7 +20,7 @@ export interface ProgresoNivel {
 export class ProgresoService {
   private http = inject(HttpClient);
   private auth = inject(AuthService);
-  private readonly API_URL = 'http://localhost:3000/api/progress';
+  private readonly API_URL = `${environment.apiUrl}/progress`;
 
   /** Niveles completados según la copia local del usuario actual. */
   leerLocal(): number[] {

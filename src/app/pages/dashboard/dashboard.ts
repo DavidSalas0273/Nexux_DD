@@ -2,6 +2,7 @@ import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-dashboard',
@@ -24,11 +25,10 @@ export class Dashboard {
 
   fotoUrl = computed(() => {
     const foto = this.user()?.foto;
-    return foto ? `http://localhost:3000${foto}` : null;
+    return foto ? `${environment.apiUrl.replace('/api', '')}${foto}` : null;
   });
 
   inicial = computed(() => (this.user()?.nombre?.trim()[0] ?? '?').toUpperCase());
-
 
   logout() {
     this.authService.logout();

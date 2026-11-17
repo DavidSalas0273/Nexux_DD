@@ -4,6 +4,7 @@ import { AuthService } from '../../../../services/auth.service';
 import { PerfilService, ResumenPerfil } from '../../../../services/perfil.service';
 import { Icono } from '../../../aprender/icono';
 import { ligaPara, siguienteLiga } from '../../../../shared/ligas';
+import { environment } from '../../../../../environments/environment';
 
 interface Logro {
   titulo: string;
@@ -67,7 +68,7 @@ export class Perfil implements OnInit, OnDestroy {
 
   fotoUrl = computed(() => {
     const foto = this.usuario()?.foto ?? this.authService.currentUser()?.foto;
-    return foto ? `http://localhost:3000${foto}` : null;
+    return foto ? `${environment.apiUrl.replace('/api', '')}${foto}` : null;
   });
 
   inicial = computed(() => (this.usuario()?.nombre ?? this.authService.currentUser()?.nombre ?? '?').trim().charAt(0).toUpperCase());
